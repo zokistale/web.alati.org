@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel=icon href=/apps/favicon.ico>
+	<title>Random Name Generator</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+	<style>
+		body {
+			font-family: 'Inter', sans-serif;
+			background-color: #f7f9fb;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			padding: 20px;
+		}
+	</style>
+</head>
+<body>
+
+<div class="w-full max-w-lg bg-white p-8 md:p-10 rounded-xl shadow-2xl transition-all duration-300">
+	<div class="text-right mb-2 pb-6 border-b">
+		<a href="/apps" class="inline-flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-lg text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">&lt; BACK</a>
+	</div>
+
+	<h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Random Name Generator</h1>
+	<p class="text-gray-500 mb-6">Generate unique placeholder full names for mock data and development.</p>
+
+	<!-- Input Section -->
+	<div class="space-y-4">
+		<div>
+			<label for="quantity" class="block text-sm font-medium text-gray-700">Number of Names (Max 500)</label>
+			<input type="number" id="quantity" value="25" min="1" max="500" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="e.g., 100">
+		</div>
+
+		<div>
+			<label for="genderSelect" class="block text-sm font-medium text-gray-700">Select Gender</label>
+			<select id="genderSelect" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+				<option value="both">Both (Default)</option>
+				<option value="male">Male</option>
+				<option value="female">Female</option>
+			</select>
+		</div>
+
+		<button id="generateBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">
+			Generate Names
+		</button>
+	</div>
+
+	<!-- Output Section -->
+	<div class="mt-8">
+		<div class="flex justify-between items-center mb-2">
+			<h2 class="text-xl font-semibold text-gray-800">Results</h2>
+			<button id="copyBtn" class="flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150" disabled>
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+				  <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+				  <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
+				</svg>
+				<span id="copyText">Copy All</span>
+			</button>
+		</div>
+
+		<div id="results" class="h-60 bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm text-gray-800 overflow-y-auto whitespace-pre-wrap">
+			The generated names will appear here.
+		</div>
+	</div>
+
+	<!-- Message Box for Custom Alerts -->
+	<div id="messageBox" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+		<div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+			<h3 id="messageTitle" class="text-lg font-bold text-gray-800 mb-3"></h3>
+			<p id="messageContent" class="text-gray-600 mb-4"></p>
+			<button onclick="closeMessageBox()" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+				OK
+			</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	// --- Message Box Logic (Custom Alert Replacement) ---
+	const messageBox = document.getElementById('messageBox');
+	const messageTitle = document.getElementById('messageTitle');
+	const messageContent = document.getElementById('messageContent');
+
+	function showMessageBox(title, content) {
+		messageTitle.textContent = title;
+		messageContent.textContent = content;
+		messageBox.classList.remove('hidden');
+		messageBox.classList.add('flex');
+	}
+
+	function closeMessageBox() {
+		messageBox.classList.add('hidden');
+		messageBox.classList.remove('flex');
+	}
+
+	// --- Core Generator Logic ---
+	const quantityInput = document.getElementById('quantity');
+	const genderSelect = document.getElementById('genderSelect');
+	const generateBtn = document.getElementById('generateBtn');
+	const copyBtn = document.getElementById('copyBtn');
+	const resultsDiv = document.getElementById('results');
+	const copyTextSpan = document.getElementById('copyText');
+
+	// --- Name Data ---
+	const MALE_FIRST_NAMES = [
+		'Liam', 'Noah', 'Oliver', 'Theodore', 'James', 'Henry', 'Mateo', 'Elijah', 'Lucas', 'William',
+		'Benjamin', 'Levi', 'Ezra', 'Sebastian', 'Jack', 'Daniel', 'Samuel', 'Michael', 'Ethan', 'Asher',
+		'John', 'Hudson', 'Luca', 'Leo', 'Elias', 'Owen', 'Alexander', 'Dylan', 'Santiago', 'Julian',
+		'David', 'Joseph', 'Matthew', 'Luke', 'Jackson', 'Maverick', 'Miles', 'Wyatt', 'Thomas', 'Isaac',
+		'Jacob', 'Mason', 'Gabriel', 'Anthony', 'Carter', 'Logan', 'Aiden', 'Grayson', 'Caleb', 'Cooper',
+		'Charles', 'Roman', 'Josiah', 'Ezekiel', 'Thiago', 'Isaiah', 'Joshua', 'Wesley', 'Jayden', 'Bennett',
+		'Christopher', 'Nathan', 'Angel', 'Nolan', 'Waylon', 'Cameron', 'Brooks', 'Andrew', 'Beau', 'Weston',
+		'Rowan', 'Adrian', 'Lincoln', 'Enzo', 'Ian', 'Kai', 'Christian', 'Axel', 'Aaron', 'Theo',
+		'Silas', 'Walker', 'Jonathan', 'Leonardo', 'Everett', 'Micah', 'Ryan', 'August', 'Gael', 'Robert',
+		'Jose', 'Eli', 'Jeremiah', 'Luka', 'Amir', 'Jaxon', 'Parker', 'Colton', 'Myles', 'Adam'
+	];
+
+	const FEMALE_FIRST_NAMES = [
+		'Olivia', 'Emma', 'Amelia', 'Charlotte', 'Mia', 'Sophia', 'Isabella', 'Evelyn', 'Ava', 'Sofia',
+		'Camila', 'Harper', 'Luna', 'Eleanor', 'Violet', 'Aurora', 'Elizabeth', 'Eliana', 'Hazel', 'Chloe',
+		'Ellie', 'Nora', 'Gianna', 'Lily', 'Emily', 'Aria', 'Scarlett', 'Penelope', 'Zoe', 'Ella',
+		'Avery', 'Abigail', 'Mila', 'Lucy', 'Isla', 'Ivy', 'Layla', 'Lainey', 'Nova', 'Grace',
+		'Willow', 'Riley', 'Emilia', 'Naomi', 'Elena', 'Madison', 'Valentina', 'Victoria', 'Stella', 'Delilah',
+		'Maya', 'Hannah', 'Leah', 'Lillian', 'Genesis', 'Josephine', 'Sadie', 'Adeline', 'Zoey', 'Sophie',
+		'Paisley', 'Alice', 'Ruby', 'Eloise', 'Madelyn', 'Leilani', 'Claire', 'Addison', 'Ayla', 'Emery',
+		'Iris', 'Eden', 'Natalie', 'Maria', 'Maeve', 'Daisy', 'Vivian', 'Clara', 'Autumn', 'Liliana',
+		'Everly', 'Audrey', 'Lyla', 'Jade', 'Kinsley', 'Millie', 'Madeline', 'Josie', 'Kennedy', 'Athena',
+		'Melody', 'Caroline', 'Aaliyah', 'Anna', 'Sarah', 'Quinn', 'Lydia', 'Lucia', 'Allison', 'Hailey'
+	];
+
+	const LAST_NAMES = [
+		'Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
+		'Hernandez', 'Lopez', 'Gonzales', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
+		'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
+		'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
+		'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts',
+		'Gomez', 'Phillips', 'Evans', 'Turner', 'Diaz', 'Parker', 'Cruz', 'Edwards', 'Collins', 'Reyes',
+		'Stewart', 'Morris', 'Morales', 'Murphy', 'Cook', 'Rogers', 'Gutierrez', 'Ortiz', 'Morgan', 'Cooper',
+		'Peterson', 'Bailey', 'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim', 'Cox', 'Ward', 'Richardson',
+		'Watson', 'Brooks', 'Chavez', 'Wood', 'James', 'Bennet', 'Gray', 'Mendoza', 'Ruiz', 'Hughes',
+		'Price', 'Alvarez', 'Castillo', 'Sanders', 'Patel', 'Myers', 'Long', 'Ross', 'Foster', 'Jimenez'
+	];
+
+	/**
+	 * Gets a random element from an array.
+	 * @param {Array} arr - The source array.
+	 * @returns {*} A random element.
+	 */
+	function getRandomElement(arr) {
+		if (arr.length === 0) return '';
+		const randomIndex = Math.floor(Math.random() * arr.length);
+		return arr[randomIndex];
+	}
+
+	/**
+	 * Generates a full name (First Name + Last Name) based on the selected gender.
+	 * @param {string} gender - 'male', 'female', or 'both'.
+	 * @returns {string} A full name.
+	 */
+	function generateFullName(gender) {
+		let firstName = '';
+		let availableFirstNames = [];
+
+		if (gender === 'male') {
+			availableFirstNames = MALE_FIRST_NAMES;
+		} else if (gender === 'female') {
+			availableFirstNames = FEMALE_FIRST_NAMES;
+		} else { // 'both'
+			availableFirstNames = MALE_FIRST_NAMES.concat(FEMALE_FIRST_NAMES);
+		}
+
+		firstName = getRandomElement(availableFirstNames);
+		const lastName = getRandomElement(LAST_NAMES);
+
+		return `${firstName} ${lastName}`;
+	}
+
+	/**
+	 * Generates a batch of unique names.
+	 */
+	function generateNames() {
+		const quantity = parseInt(quantityInput.value);
+		const selectedGender = genderSelect.value;
+
+		// Input validation
+		if (isNaN(quantity) || quantity <= 0) {
+			showMessageBox('Invalid Input', 'Please enter a valid number greater than 0.');
+			return;
+		}
+		if (quantity > 500) {
+			showMessageBox('Quantity Limit', 'The maximum allowed quantity is 500.');
+			return;
+		}
+
+		const generatedNames = new Set();
+		const maxAttempts = quantity * 5; // Prevent infinite loop for large quantities
+		let attempts = 0;
+
+		while (generatedNames.size < quantity && attempts < maxAttempts) {
+			const name = generateFullName(selectedGender);
+			generatedNames.add(name);
+			attempts++;
+		}
+
+		const namesArray = Array.from(generatedNames);
+		resultsDiv.textContent = namesArray.join('\n');
+
+		// Enable copy button and reset text
+		copyBtn.disabled = namesArray.length === 0;
+		copyTextSpan.textContent = 'Copy All';
+
+		if (namesArray.length < quantity) {
+			 showMessageBox('Warning', `Could only generate ${namesArray.length} unique names after ${maxAttempts} attempts.`);
+		}
+	}
+
+	/**
+	 * Copies the content of the results div to the clipboard.
+	 */
+	function copyToClipboard() {
+		const textToCopy = resultsDiv.textContent;
+		if (textToCopy === 'The generated names will appear here.' || textToCopy.trim() === '') {
+			showMessageBox('Nothing to Copy', 'Please generate some names first.');
+			return;
+		}
+
+		// Use document.execCommand('copy') for better compatibility in iframe environments
+		const tempTextarea = document.createElement('textarea');
+		tempTextarea.value = textToCopy;
+		document.body.appendChild(tempTextarea);
+		tempTextarea.select();
+
+		try {
+			document.execCommand('copy');
+			copyTextSpan.textContent = 'Copied!';
+			// Reset text after a delay
+			setTimeout(() => { copyTextSpan.textContent = 'Copy All'; }, 2000);
+		} catch (err) {
+			showMessageBox('Copy Failed', 'Unable to copy text. Please select and copy manually.');
+			console.error('Copy failed:', err);
+		} finally {
+			document.body.removeChild(tempTextarea);
+		}
+	}
+
+	// Attach event listeners
+	generateBtn.addEventListener('click', generateNames);
+	copyBtn.addEventListener('click', copyToClipboard);
+
+	// Initial setup on load
+	window.onload = () => {
+		generateNames();    // Generate initial batch with default settings (Both)
+	};
+</script>
+
+</body>
+</html>

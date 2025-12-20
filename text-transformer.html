@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel=icon href="favicon.ico">
+	<title>Text Transformer & Slug Generator</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="w-full max-w-lg bg-white p-8 md:p-10 rounded-xl shadow-2xl transition-all duration-300">
+	<div class="text-right mb-2 pb-6 border-b">
+		<a href="/apps" class="inline-flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-lg text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">&lt; BACK</a>
+	</div>
+
+	<h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Text Transformer</h1>
+	<p class="text-gray-500 mb-6">Convert any text into professional titles or URL-friendly slugs for files and web pages.</p>
+
+	<!-- Input Section -->
+	<div class="space-y-4">
+		<div>
+			<label for="textInput" class="block text-sm font-medium text-gray-700">Enter your text</label>
+			<textarea id="textInput" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="Type or paste your text here..."></textarea>
+		</div>
+
+		<button id="transformBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">
+			Transform Text
+		</button>
+	</div>
+
+	<!-- Output Section -->
+	<div class="mt-8 space-y-6">
+		<!-- Title Case Card -->
+		<div>
+			<div class="flex justify-between items-center mb-2">
+				<h2 class="text-sm font-bold uppercase tracking-wider text-gray-500">Title Case</h2>
+				<button onclick="copyToClipboard('titleOutput', 'titleCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+					  <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+					  <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
+					</svg>
+					<span id="titleCopyText">Copy</span>
+				</button>
+			</div>
+			<div id="titleOutput" class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-800 font-medium">
+				Waiting for input...
+			</div>
+		</div>
+
+		<!-- Slug Card -->
+		<div>
+			<div class="flex justify-between items-center mb-2">
+				<h2 class="text-sm font-bold uppercase tracking-wider text-gray-500">URL Slug</h2>
+				<button onclick="copyToClipboard('slugOutput', 'slugCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+					  <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+					  <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
+					</svg>
+					<span id="slugCopyText">Copy</span>
+				</button>
+			</div>
+			<div id="slugOutput" class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-indigo-700 font-mono break-all">
+				waiting-for-input
+			</div>
+		</div>
+	</div>
+
+	<!-- Message Box -->
+	<div id="messageBox" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+		<div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+			<h3 id="messageTitle" class="text-lg font-bold text-gray-800 mb-3"></h3>
+			<p id="messageContent" class="text-gray-600 mb-4"></p>
+			<button onclick="closeMessageBox()" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+				OK
+			</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	const messageBox = document.getElementById('messageBox');
+	const messageTitle = document.getElementById('messageTitle');
+	const messageContent = document.getElementById('messageContent');
+	const textInput = document.getElementById('textInput');
+	const transformBtn = document.getElementById('transformBtn');
+	const titleOutput = document.getElementById('titleOutput');
+	const slugOutput = document.getElementById('slugOutput');
+
+	function showMessageBox(title, content) {
+		messageTitle.textContent = title;
+		messageContent.textContent = content;
+		messageBox.classList.remove('hidden');
+		messageBox.classList.add('flex');
+	}
+
+	function closeMessageBox() {
+		messageBox.classList.add('hidden');
+		messageBox.classList.remove('flex');
+	}
+
+	/**
+	 * Converts string to Title Case
+	 */
+	function toTitleCase(str) {
+		return str.toLowerCase().split(' ').map(word => {
+			return word.charAt(0).toUpperCase() + word.slice(1);
+		}).join(' ');
+	}
+
+	/**
+	 * Converts string to a Slug
+	 */
+	function toSlug(str) {
+		return str
+			.toLowerCase()
+			.trim()
+			.replace(/[^\w\s-]/g, '') // Remove non-word characters (except space/dash)
+			.replace(/[\s_-]+/g, '-')  // Replace spaces/underscores with single dash
+			.replace(/^-+|-+$/g, '');   // Trim dashes from ends
+	}
+
+	function transformText() {
+		const val = textInput.value.trim();
+		if (!val) {
+			showMessageBox('Input Required', 'Please enter some text to transform.');
+			return;
+		}
+
+		titleOutput.textContent = toTitleCase(val);
+		slugOutput.textContent = toSlug(val);
+	}
+
+	function copyToClipboard(elementId, btnTextId) {
+		const text = document.getElementById(elementId).textContent;
+		const btnSpan = document.getElementById(btnTextId);
+
+		if (text.includes('Waiting for input')) return;
+
+		const temp = document.createElement('textarea');
+		temp.value = text;
+		document.body.appendChild(temp);
+		temp.select();
+
+		try {
+			document.execCommand('copy');
+			const originalText = btnSpan.textContent;
+			btnSpan.textContent = 'Copied!';
+			setTimeout(() => { btnSpan.textContent = originalText; }, 2000);
+		} catch (err) {
+			showMessageBox('Copy Failed', 'Unable to copy text automatically.');
+		} finally {
+			document.body.removeChild(temp);
+		}
+	}
+
+	transformBtn.addEventListener('click', transformText);
+
+	// Auto-transform on enter (Shift+Enter for new line)
+	textInput.addEventListener('keydown', (e) => {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault();
+			transformText();
+		}
+	});
+</script>
+
+</body>
+</html>

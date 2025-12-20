@@ -9,3 +9,7 @@ Generate unique placeholder email addresses for testing or development.
 ## Random Name Generator
 
 Generate unique placeholder full names for mock data and development.
+
+## Text Transformer
+
+Convert any text into professional titles or URL-friendly slugs for files and web pages.

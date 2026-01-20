@@ -103,21 +103,42 @@
 
 	// List of common, non-production placeholder domains
 	const RANDOM_DOMAINS = [
-		'testmail.com',
-		'example.org',
-		'fakemail.net',
-		'inbox.test',
-		'dev.co',
-		'temp.io',
-		'mockup.xyz',
-		'webtest.info',
+		// --- Standard RFC 2606 & 6761 Reserved Domains ---
 		'example.com',
 		'example.net',
-		'invalid.qa',
-		'localhost.test',
+		'example.org',
+		'example.edu',
+		'test',
+		'example',
+		'invalid',
+		'localhost',
+
+		// --- Developer & Documentation Specific ---
+		'altostrat.com',
+		'cymbalgroup.com',
+		'examplepetstore.com',
+		'exampleco.com',
 		'contoso.com',
+		'adatum.com',
+		'adventure-works.com',
+		'northwindtraders.com',
+
+		// --- Mock / QA Utility Domains ---
+		'testmail.com',
+		'fakemail.net',
+		'inbox.test',
+		'mockup.xyz',
+		'webtest.info',
+		'invalid.qa',
 		'test.qa',
-		'dev.test'
+		'dev.test',
+		'staging.test',
+		'sandbox.io',
+		'dummy.net',
+		'null.void',
+		'local.dev',
+		'myapp.internal',
+		'service.test'
 	];
 
 	/**

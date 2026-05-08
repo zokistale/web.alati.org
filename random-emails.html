@@ -4,70 +4,72 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel=icon href="favicon.ico">
-	<title>Random Email Generator</title>
+	<title>Email Generator</title>
 	<script src="https://cdn.tailwindcss.com"></script>
+	<script src="app-navigation.js" defer></script>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="w-full max-w-lg bg-white p-8 md:p-10 rounded-xl shadow-2xl transition-all duration-300">
-	<div class="text-right mb-2 pb-6 border-b">
-		<a href="/apps" class="inline-flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-lg text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">&lt; BACK</a>
-	</div>
+<div class="md:flex gap-10">
+	<div data-app-navigation></div>
+	<div>
+		<div class="w-full max-w-lg bg-white dark:bg-gray-900 p-8 md:p-10 rounded-xl shadow-2xl transition-all duration-300">
+			<h1 data-app-page-title class="text-3xl font-bold mb-6 border-b dark:border-gray-700 pb-2"></h1>
+			<p class="mb-6">Generate unique placeholder email addresses for testing or development.</p>
 
-	<h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Batch Email Generator</h1>
-	<p class="text-gray-500 mb-6">Generate unique placeholder email addresses for testing or development.</p>
-
-	<!-- Input Section -->
-	<div class="space-y-4">
-		<div>
-			<label for="quantity" class="block text-sm font-medium text-gray-700">Number of Emails (Max 500)</label>
-			<input type="number" id="quantity" value="25" min="1" max="500" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="e.g., 100">
-		</div>
-
-		<div>
-			<label for="domain" class="block text-sm font-medium text-gray-700 flex items-center justify-between">
-				Domain Name
-				<div class="flex items-center">
-					<input id="randomDomainToggle" type="checkbox" checked class="h-4 w-4 text-indigo-600 border-indigo-500/50 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:ring-opacity-25 mr-2">
-					<label for="randomDomainToggle" class="text-xs font-medium text-gray-500 select-none">Use Random Domains</label>
+			<!-- Input Section -->
+			<div class="space-y-4">
+				<div>
+					<label for="quantity" class="block text-sm font-medium">Number of Emails (Max 500)</label>
+					<input type="number" id="quantity" value="25" min="1" max="500" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="e.g., 100">
 				</div>
-			</label>
-			<input type="text" id="domain" value="" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="Random domain will be used" disabled>
-		</div>
 
-		<button id="generateBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">
-			Generate Emails
-		</button>
-	</div>
+				<div>
+					<label for="domain" class="block text-sm font-medium flex items-center justify-between">
+						Domain Name
+						<div class="flex items-center gap-3 cursor-pointer group">
+							<input id="randomDomainToggle" type="checkbox" checked class="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 accent-indigo-600">
+							<label for="randomDomainToggle" class="text-sm font-medium">Use Random Domains</label>
+						</div>
+					</label>
+					<input type="text" id="domain" value="" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="Random domain will be used" disabled>
+				</div>
 
-	<!-- Output Section -->
-	<div class="mt-8">
-		<div class="flex justify-between items-center mb-2">
-			<h2 class="text-xl font-semibold text-gray-800">Results</h2>
-			<button id="copyBtn" class="flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150" disabled>
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-				  <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-				  <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
-				</svg>
-				<span id="copyText">Copy All</span>
-			</button>
-		</div>
+				<button id="generateBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">
+					Generate Emails
+				</button>
+			</div>
 
-		<div id="results" class="h-60 bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm text-gray-800 overflow-y-auto whitespace-pre-wrap">
-			The generated emails will appear here.
-		</div>
-	</div>
+			<!-- Output Section -->
+			<div class="mt-8">
+				<div class="flex justify-between items-center mb-2">
+					<h2 class="text-xl font-semibold">Results</h2>
+					<button id="copyBtn" class="flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150" disabled>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+							<path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+							<path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
+						</svg>
+						<span id="copyText">Copy All</span>
+					</button>
+				</div>
 
-	<!-- Message Box for Custom Alerts -->
-	<div id="messageBox" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center p-4 z-50">
-		<div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
-			<h3 id="messageTitle" class="text-lg font-bold text-gray-800 mb-3"></h3>
-			<p id="messageContent" class="text-gray-600 mb-4"></p>
-			<button onclick="closeMessageBox()" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-				OK
-			</button>
+				<div id="results" class="h-60 border border-gray-300 rounded-lg p-3 text-sm overflow-y-auto whitespace-pre-wrap">
+					The generated emails will appear here.
+				</div>
+			</div>
+
+			<!-- Message Box for Custom Alerts -->
+			<div id="messageBox" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+				<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-sm w-full">
+					<h3 id="messageTitle" class="text-lg font-bold mb-3"></h3>
+					<p id="messageContent" class="mb-4"></p>
+					<button onclick="closeMessageBox()" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+						OK
+					</button>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -188,10 +190,12 @@
 
 		// Input validation
 		if (isNaN(quantity) || quantity <= 0) {
+			quantityInput.value = 1; // Reset to minimum allowed
 			showMessageBox('Invalid Input', 'Please enter a valid number greater than 0.');
 			return;
 		}
 		if (quantity > 500) {
+			quantityInput.value = 500; // Reset to max allowed
 			showMessageBox('Quantity Limit', 'The maximum allowed quantity is 500.');
 			return;
 		}

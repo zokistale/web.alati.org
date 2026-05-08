@@ -22,39 +22,6 @@
 		color: var(--text);
 	}
 
-	.bg-white {
-		background-color: var(--surface) !important;
-	}
-
-	.text-gray-800,
-	.text-gray-700 {
-		color: var(--text) !important;
-	}
-
-	.text-gray-600,
-	.text-gray-500 {
-		color: var(--muted) !important;
-	}
-
-	.bg-gray-50 {
-		background-color: #111827 !important;
-	}
-
-	.bg-gray-900 {
-		background-color: #0b1220 !important;
-	}
-
-	.bg-gray-600 {
-		background-color: #374151 !important;
-	}
-
-	.border-gray-300,
-	.border-gray-200,
-	.border-b,
-	.border {
-		border-color: var(--subtle) !important;
-	}
-
 	.shadow-2xl {
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
 	}
@@ -66,7 +33,7 @@ body {
 	color: var(--text);
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	align-items: flex-start;
 	min-height: 100vh;
 	padding: 20px;
 }

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel=icon href="favicon.ico">
+	<title>Name Generator</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script src="assets/app-navigation.82a8e81f.js" defer></script>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="assets/style.8cfa23a6.css">
+</head>
+<body>
+
+<div class="md:flex gap-10">
+	<div data-app-navigation></div>
+	<div>
+		<div class="w-full max-w-lg bg-white dark:bg-gray-900 p-8 md:p-10 rounded-xl shadow-2xl transition-all duration-300">
+			<h1 data-app-page-title class="text-3xl font-bold mb-6 border-b dark:border-gray-700 pb-2"></h1>
+			<p class="mb-6">Generate unique placeholder full names for mock data and development.</p>
+
+			<!-- Input Section -->
+			<div class="space-y-4">
+				<div>
+					<label for="quantity" class="block text-sm font-medium">Number of Names (Max 500)</label>
+					<input type="number" id="quantity" value="25" min="1" max="500" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="e.g., 100">
+				</div>
+
+				<div>
+					<label for="genderSelect" class="block text-sm font-medium">Select Gender</label>
+					<select id="genderSelect" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+						<option value="both">Both (Default)</option>
+						<option value="male">Male</option>
+						<option value="female">Female</option>
+					</select>
+				</div>
+
+				<button id="generateBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">
+					Generate Names
+				</button>
+			</div>
+
+			<!-- Output Section -->
+			<div class="mt-8">
+				<div class="flex justify-between items-center mb-2">
+					<h2 class="text-xl font-semibold">Results</h2>
+					<button id="copyBtn" class="flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150" disabled>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+						<path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+						<path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
+						</svg>
+						<span id="copyText">Copy All</span>
+					</button>
+				</div>
+
+				<div id="results" class="h-60 border border-gray-300 rounded-lg p-3 text-sm overflow-y-auto whitespace-pre-wrap">
+					The generated names will appear here.
+				</div>
+			</div>
+
+			<!-- Message Box for Custom Alerts -->
+			<div id="messageBox" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+				<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-sm w-full">
+					<h3 id="messageTitle" class="text-lg font-bold mb-3"></h3>
+					<p id="messageContent" class="mb-4"></p>
+					<button onclick="closeMessageBox()" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+						OK
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	// --- Message Box Logic (Custom Alert Replacement) ---
+	const messageBox = document.getElementById('messageBox');
+	const messageTitle = document.getElementById('messageTitle');
+	const messageContent = document.getElementById('messageContent');
+
+	function showMessageBox(title, content) {
+		messageTitle.textContent = title;
+		messageContent.textContent = content;
+		messageBox.classList.remove('hidden');
+		messageBox.classList.add('flex');
+	}
+
+	function closeMessageBox() {
+		messageBox.classList.add('hidden');
+		messageBox.classList.remove('flex');
+	}
+
+	// --- Core Generator Logic ---
+	const quantityInput = document.getElementById('quantity');
+	const genderSelect = document.getElementById('genderSelect');
+	const generateBtn = document.getElementById('generateBtn');
+	const copyBtn = document.getElementById('copyBtn');
+	const resultsDiv = document.getElementById('results');
+	const copyTextSpan = document.getElementById('copyText');
+
+	// --- Name Data ---
+	const MALE_FIRST_NAMES = [
+		'Liam', 'Noah', 'Oliver', 'Theodore', 'James', 'Henry', 'Mateo', 'Elijah', 'Lucas', 'William',
+		'Benjamin', 'Levi', 'Ezra', 'Sebastian', 'Jack', 'Daniel', 'Samuel', 'Michael', 'Ethan', 'Asher',
+		'John', 'Hudson', 'Luca', 'Leo', 'Elias', 'Owen', 'Alexander', 'Dylan', 'Santiago', 'Julian',
+		'David', 'Joseph', 'Matthew', 'Luke', 'Jackson', 'Maverick', 'Miles', 'Wyatt', 'Thomas', 'Isaac',
+		'Jacob', 'Mason', 'Gabriel', 'Anthony', 'Carter', 'Logan', 'Aiden', 'Grayson', 'Caleb', 'Cooper',
+		'Charles', 'Roman', 'Josiah', 'Ezekiel', 'Thiago', 'Isaiah', 'Joshua', 'Wesley', 'Jayden', 'Bennett',
+		'Christopher', 'Nathan', 'Angel', 'Nolan', 'Waylon', 'Cameron', 'Brooks', 'Andrew', 'Beau', 'Weston',
+		'Rowan', 'Adrian', 'Lincoln', 'Enzo', 'Ian', 'Kai', 'Christian', 'Axel', 'Aaron', 'Theo',
+		'Silas', 'Walker', 'Jonathan', 'Leonardo', 'Everett', 'Micah', 'Ryan', 'August', 'Gael', 'Robert',
+		'Jose', 'Eli', 'Jeremiah', 'Luka', 'Amir', 'Jaxon', 'Parker', 'Colton', 'Myles', 'Adam',
+		'Nicholas', 'Xavier', 'Dominic', 'Atlas', 'River', 'George', 'Cole', 'Zion', 'Luis', 'Arthur',
+		'Max', 'Malachi', 'Milo', 'Finn', 'Rhett', 'Elliott', 'Grant', 'Emiliano', 'Bodie', 'Justin',
+		'Brandon', 'Jonah', 'Arlo', 'Archer', 'Jace', 'Sawyer', 'Emmett', 'Jude', 'Hayden', 'Gavin',
+		'Xander', 'Bentley', 'Callum', 'Knox', 'Felix', 'Hugo', 'Preston', 'Tucker', 'Riley', 'Kyrie',
+		'Beckham', 'Lorenzo', 'Leon', 'Adriel', 'Kobi', 'Atticus', 'Griffin', 'Holden', 'Nico', 'Zane',
+		'Kylo', 'Kaleb', 'Oscar', 'Cade', 'Nash', 'Dallas', 'Reed', 'Dawson', 'Tristan', 'Lane',
+		'Iker', 'Damian', 'Matias', 'Bodhi', 'Kellan', 'Dante', 'Abel', 'Barrett', 'Gideon', 'Victor',
+		'Amory', 'Karter', 'Beckett', 'Finley', 'Forrest', 'Tate', 'Cyrus', 'Leland', 'Marcus', 'Malakai',
+		'Otto', 'Zander', 'Stetson', 'Desmond', 'Rafael', 'Kash', 'Hayes', 'Sullivan', 'Kayson', 'Soren',
+		'Ronan', 'Kieran', 'Lucian', 'Winston', 'Rhys', 'Wilder', 'Boone', 'Cassian', 'Alistair', 'Pierce',
+		'Kaden', 'Zayden', 'Kyree', 'Kody', 'Lennox', 'Milan', 'Remy', 'Zayne', 'Kanan', 'Crosby',
+		'Dax', 'Forrest', 'Oakley', 'Koa', 'Kye', 'Noel', 'Vincenzo', 'Aziel', 'Arian', 'Khalil',
+		'Quinton', 'Avery', 'Corey', 'Casey', 'Dorian', 'Luciano', 'Rayan', 'Aarav', 'Hamza', 'Kit',
+		'Reign', 'Kairo', 'Onyx', 'Baker', 'Banks', 'Bridger', 'Callan', 'Calvin', 'Casper', 'Derrick',
+		'Donovan', 'Duke', 'Dustin', 'Eddie', 'Edgar', 'Edison', 'Edwin', 'Emmitt', 'Erik', 'Estevan',
+		'Fabian', 'Fletcher', 'Franklin', 'Frederick', 'Garrett', 'Gary', 'Gerald', 'Gregory', 'Gunner', 'Hank',
+		'Harlan', 'Harley', 'Harold', 'Harvey', 'Hezekiah', 'Hiram', 'Howard', 'Hugh', 'Hunter', 'Huxley',
+		'Ignacio', 'Ira', 'Irvin', 'Ivan', 'Jadiel', 'Jagger', 'Jakari', 'Jalen', 'Jamari', 'Jameson',
+		'Jared', 'Jarrett', 'Jasper', 'Javier', 'Jedidiah', 'Jefferson', 'Jeffrey', 'Jensen', 'Jesse', 'Jett',
+		'Jimmy', 'Joe', 'Joel', 'Joey', 'Johan', 'Johnathan', 'Johnny', 'Jordan', 'Jordy', 'Jorge',
+		'Jovanni', 'Joziah', 'Juan', 'Judah', 'Julius', 'Justice', 'Kade', 'Kaelan', 'Kamari', 'Kamden',
+		'Kamdyn', 'Kameron', 'Kamryn', 'Kane', 'Kannon', 'Kareem', 'Karson', 'Karter', 'Kase', 'Kasen',
+		'Kash', 'Kason', 'Kayden', 'Kaysen', 'Keanu', 'Keaton', 'Keegan', 'Keelan', 'Keenan', 'Keith',
+		'Kelvin', 'Kendrick', 'Kenneth', 'Kenzo', 'Kevin', 'Khai', 'Khalid', 'Kian', 'Killian', 'King',
+		'Kingsley', 'Kingston', 'Kobe', 'Koda', 'Kody', 'Kolby', 'Kole', 'Kolton', 'Konnor', 'Korbin',
+		'Krew', 'Kristian', 'Kristopher', 'Kye', 'Kylan', 'Kyle', 'Kylen', 'Kyler', 'Kylian', 'Kylo',
+		'Kyng', 'Kyree', 'Kyrie', 'Lachlan', 'Lance', 'Landen', 'Landon', 'Landry', 'Langston', 'Lawrence',
+		'Lawson', 'Layne', 'Layton', 'Leighton', 'Leland', 'Lemuel', 'Lennon', 'Lennox', 'Leo', 'Leon',
+		'Leonard', 'Leonardo', 'Leonel', 'Leonidas', 'Leroy', 'Lewis', 'Liam', 'Lian', 'Lincoln', 'Lionel',
+		'Lochlan', 'Logun', 'Loris', 'Louie', 'Louis', 'Loyal', 'Lucan', 'Lucas', 'Lucca', 'Lucian',
+		'Luciano', 'Luigi', 'Luis', 'Luka', 'Lukas', 'Luke', 'Lux', 'Lydon', 'Lyle', 'Lyric',
+		'Mac', 'Mack', 'Madden', 'Maddox', 'Maddux', 'Magnus', 'Maison', 'Major', 'Makai', 'Makari',
+		'Malakai', 'Malcolm', 'Malik', 'Manuel', 'Marcel', 'Marcelo', 'Marco', 'Marcos', 'Marcus', 'Mario',
+		'Mark', 'Markus', 'Marlon', 'Marshall', 'Martin', 'Marvin', 'Mathias', 'Matias', 'Matteo', 'Matthew',
+		'Matthias', 'Maurice', 'Mauricio', 'Maverick', 'Max', 'Maxim', 'Maximilian', 'Maximiliano', 'Maximo', 'Maximus',
+		'Maxton', 'Maxwell', 'Mayson', 'Mekhi', 'Melvin', 'Memphis', 'Messiah', 'Micah', 'Michael', 'Michaels',
+		'Miguel', 'Mike', 'Mikhail', 'Milan', 'Miles', 'Miller', 'Milo', 'Milton', 'Misael', 'Mitchell',
+		'Mohamed', 'Mohammad', 'Mohammed', 'Moises', 'Mordechai', 'Morgan', 'Moses', 'Moshe', 'Muhammad', 'Musa',
+		'Mustafa', 'Myles', 'Mylo', 'Nash', 'Nasir', 'Nathan', 'Nathanael', 'Nathaniel', 'Nehemiah', 'Neil',
+		'Nelson', 'Neo', 'Neymar', 'Nicholas', 'Nick', 'Nico', 'Nicolas', 'Niklaus', 'Niko', 'Nikolai',
+		'Nikolas', 'Nixon', 'Noah', 'Noam', 'Noe', 'Noel', 'Nolan', 'Norman', 'Nova', 'Nox',
+		'Nya', 'Oakley', 'Obadiah', 'Ocean', 'Odin', 'Ollie', 'Omari', 'Omarion', 'Orion', 'Orlando'
+	];
+
+	const FEMALE_FIRST_NAMES = [
+		'Olivia', 'Emma', 'Amelia', 'Charlotte', 'Mia', 'Sophia', 'Isabella', 'Evelyn', 'Ava', 'Sofia',
+		'Camila', 'Harper', 'Luna', 'Eleanor', 'Violet', 'Aurora', 'Elizabeth', 'Eliana', 'Hazel', 'Chloe',
+		'Ellie', 'Nora', 'Gianna', 'Lily', 'Emily', 'Aria', 'Scarlett', 'Penelope', 'Zoe', 'Ella',
+		'Avery', 'Abigail', 'Mila', 'Lucy', 'Isla', 'Ivy', 'Layla', 'Lainey', 'Nova', 'Grace',
+		'Willow', 'Riley', 'Emilia', 'Naomi', 'Elena', 'Madison', 'Valentina', 'Victoria', 'Stella', 'Delilah',
+		'Maya', 'Hannah', 'Leah', 'Lillian', 'Genesis', 'Josephine', 'Sadie', 'Adeline', 'Zoey', 'Sophie',
+		'Paisley', 'Alice', 'Ruby', 'Eloise', 'Madelyn', 'Leilani', 'Claire', 'Addison', 'Ayla', 'Emery',
+		'Iris', 'Eden', 'Natalie', 'Maria', 'Maeve', 'Daisy', 'Vivian', 'Clara', 'Autumn', 'Liliana',
+		'Everly', 'Audrey', 'Lyla', 'Jade', 'Kinsley', 'Millie', 'Madeline', 'Josie', 'Kennedy', 'Athena',
+		'Melody', 'Caroline', 'Aaliyah', 'Anna', 'Sarah', 'Quinn', 'Lydia', 'Lucia', 'Allison', 'Hailey',
+		'Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth', 'Barbara', 'Susan', 'Jessica', 'Sarah', 'Karen',
+		'Nancy', 'Lisa', 'Betty', 'Margaret', 'Sandra', 'Ashley', 'Kimberly', 'Donna', 'Emily', 'Michelle',
+		'Carol', 'Amanda', 'Dorothy', 'Melissa', 'Deborah', 'Stephanie', 'Rebecca', 'Sharon', 'Laura', 'Cynthia',
+		'Kathleen', 'Amy', 'Angela', 'Shirley', 'Anna', 'Brenda', 'Pamela', 'Nicole', 'Emma', 'Samantha',
+		'Helen', 'Debra', 'Rachel', 'Diane', 'Catherine', 'Alana', 'Adelaide', 'Anabelle', 'Aubree', 'Audrey',
+		'Bailee', 'Beatrice', 'Bella', 'Bernice', 'Bethany', 'Blair', 'Bonnie', 'Bridget', 'Brielle', 'Bristol',
+		'Brooke', 'Brooklyn', 'Callie', 'Capri', 'Carly', 'Cassandra', 'Cassidy', 'Catalina', 'Cecilia', 'Celine',
+		'Chelsea', 'Cheyenne', 'Christina', 'Christine', 'Cindy', 'Colette', 'Coralie', 'Crystal', 'Dakota', 'Daleyza',
+		'Daphne', 'Davina', 'Dayana', 'Deanna', 'Deborah', 'Delaney', 'Demi', 'Denise', 'Desiree', 'Destiny',
+		'Diana', 'Dior', 'Dorcas', 'Dream', 'Dulce', 'Edith', 'Eileen', 'Elaine', 'Eleanor', 'Elena',
+		'Eliana', 'Elisa', 'Elisabeth', 'Elise', 'Eliza', 'Elizabeth', 'Ella', 'Elle', 'Ellen', 'Elliana',
+		'Ellie', 'Eloise', 'Elsa', 'Elsie', 'Elyse', 'Ember', 'Emerson', 'Emery', 'Emilia', 'Emilie',
+		'Emily', 'Emma', 'Emmaline', 'Emmalyn', 'Emmeline', 'Emmie', 'Emmy', 'Ensley', 'Erica', 'Erika',
+		'Erin', 'Esmeralda', 'Estelle', 'Esther', 'Estrella', 'Etta', 'Eugenia', 'Eva', 'Evangeline', 'Eve',
+		'Evelyn', 'Everlee', 'Everleigh', 'Everly', 'Evie', 'Ezra', 'Faith', 'Farrah', 'Fatima', 'Fay',
+		'Felicia', 'Felicity', 'Fiona', 'Flora', 'Florence', 'Frances', 'Francesca', 'Freya', 'Frida', 'Gabriela',
+		'Gabriella', 'Gabrielle', 'Gemma', 'Genevieve', 'Georgia', 'Gia', 'Giana', 'Gianna', 'Giselle', 'Giuliana',
+		'Gloria', 'Goldie', 'Grace', 'Gracelyn', 'Gracelynn', 'Gracie', 'Greta', 'Gretchen', 'Guadalupe', 'Gwen',
+		'Gwendolyn', 'Hadassah', 'Hadlee', 'Hadley', 'Hailee', 'Hailey', 'Haisley', 'Haley', 'Halle', 'Hallie',
+		'Hana', 'Hanna', 'Hannah', 'Harlee', 'Harleigh', 'Harley', 'Harlow', 'Harmony', 'Harper', 'Hattie',
+		'Haven', 'Hayden', 'Haylee', 'Hayley', 'Hazel', 'Heaven', 'Heidi', 'Helen', 'Helena', 'Henley',
+		'Holly', 'Hope', 'Hunter', 'Ida', 'Imani', 'Imogene', 'India', 'Indie', 'Ingrid', 'Irene',
+		'Iris', 'Isabel', 'Isabela', 'Isabell', 'Isabella', 'Isabelle', 'Isla', 'Itzayana', 'Itzel', 'Ivanna',
+		'Ivory', 'Ivy', 'Iyanna', 'Izabella', 'Jacqueline', 'Jada', 'Jade', 'Jadiel', 'Jaelynn', 'Jaliyah',
+		'Jamie', 'Jane', 'Janelle', 'Janet', 'Janiyah', 'Jasmine', 'Jayla', 'Jaylee', 'Jaylene', 'Jazlyn',
+		'Jazmin', 'Jazmine', 'Jean', 'Jenna', 'Jennifer', 'Jenny', 'Jessica', 'Jessie', 'Jewel', 'Jill',
+		'Jillian', 'Jimena', 'Joanna', 'Jocelyn', 'Joelle', 'Johanna', 'Jolene', 'Jolie', 'Jordan', 'Jordyn',
+		'Josephine', 'Josie', 'Journee', 'Journey', 'Joy', 'Joyce', 'Judith', 'Judy', 'Julia', 'Julianna',
+		'Julianne', 'Julie', 'Juliet', 'Juliette', 'Julissa', 'June', 'Juniper', 'Justice', 'Kadence', 'Kai',
+		'Kaia', 'Kailani', 'Kailey', 'Kairi', 'Kaitlyn', 'Kaiya', 'Kalani', 'Kali', 'Kaliyah', 'Kallie',
+		'Kamari', 'Kamila', 'Kamilah', 'Kamryn', 'Kara', 'Karen', 'Karina', 'Karla', 'Karlee', 'Karsyn',
+		'Kassidy', 'Kataleya', 'Katalina', 'Katherine', 'Kathleen', 'Kathryn', 'Katie', 'Katrina', 'Kayla', 'Kaylani',
+		'Kaylee', 'Kayleigh', 'Kaylene', 'Kaylie', 'Kehlani', 'Keira', 'Kelly', 'Kelsey', 'Kendall', 'Kendra',
+		'Kenia', 'Kenna', 'Kennedi', 'Kennedy', 'Kensley', 'Kenzie', 'Keyla', 'Kiana', 'Kiara', 'Kiera',
+		'Kimber', 'Kimberly', 'Kinslee', 'Kinsley', 'Kira', 'Kirsten', 'Kora', 'Kori', 'Kyla', 'Kylee',
+		'Kyleigh', 'Kylie', 'Kyra', 'Lacey', 'Laila', 'Lainey', 'Lana', 'Landry', 'Laney', 'Lara',
+		'Laura', 'Laurel', 'Lauren', 'Lauryn', 'Layla', 'Laylah', 'Layne', 'Lea', 'Leah', 'Leanna',
+		'Leila', 'Leilani', 'Lena', 'Lennon', 'Lennox', 'Leona', 'Leslie', 'Lexi', 'Lexie', 'Leyla',
+		'Lia', 'Liana', 'Liberty', 'Lila', 'Lilah', 'Lilian', 'Liliana', 'Lilianna', 'Lilith', 'Lillian',
+		'Lilliana', 'Lillie', 'Lilly', 'Lily', 'Lilyana', 'Lina', 'Linda', 'Lindsay', 'Lindsey', 'Lisa',
+		'Liv', 'Livia', 'Logun', 'Lola', 'London', 'Londyn', 'Lorelei', 'Loretta', 'Lori', 'Lottie',
+		'Lotus', 'Louisa', 'Louise', 'Lucia', 'Luciana', 'Lucille', 'Lucinda', 'Lucy', 'Luella', 'Luisa',
+		'Lula', 'Luna', 'Luz', 'Lydia', 'Lyla', 'Lylah', 'Lyra', 'Lyric', 'Mabel', 'Macie'
+	];
+
+	const LAST_NAMES = [
+		'Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
+		'Hernandez', 'Lopez', 'Gonzales', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
+		'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
+		'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
+		'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts',
+		'Gomez', 'Phillips', 'Evans', 'Turner', 'Diaz', 'Parker', 'Cruz', 'Edwards', 'Collins', 'Reyes',
+		'Stewart', 'Morris', 'Morales', 'Murphy', 'Cook', 'Rogers', 'Gutierrez', 'Ortiz', 'Morgan', 'Cooper',
+		'Peterson', 'Bailey', 'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim', 'Cox', 'Ward', 'Richardson',
+		'Watson', 'Brooks', 'Chavez', 'Wood', 'James', 'Bennet', 'Gray', 'Mendoza', 'Ruiz', 'Hughes',
+		'Price', 'Alvarez', 'Castillo', 'Sanders', 'Patel', 'Myers', 'Long', 'Ross', 'Foster', 'Jimenez',
+		'Powell', 'Jenkins', 'Perry', 'Russell', 'Sullivan', 'Bell', 'Coleman', 'Butler', 'Henderson', 'Barnes',
+		'Gonzales', 'Fisher', 'Vasquez', 'Simmons', 'Romero', 'Jordan', 'Patterson', 'Alexander', 'Hamilton', 'Graham',
+		'Reynolds', 'Griffin', 'Wallace', 'Moreno', 'West', 'Cole', 'Hayes', 'Bryant', 'Herrera', 'Gibson',
+		'Ellis', 'Tran', 'Medina', 'Aguilar', 'Stevens', 'Murray', 'Ford', 'Castro', 'Marshall', 'Owens',
+		'Harrison', 'Fernandez', 'McDonald', 'Woods', 'Washington', 'Kennedy', 'Wells', 'Vargas', 'Henry', 'Chen',
+		'Freeman', 'Webb', 'Tucker', 'Guzman', 'Burns', 'Novak', 'Wagner', 'Snyder', 'Vaughan', 'George',
+		'Olson', 'Hale', 'McKinney', 'Bush', 'Barrett', 'Curtis', 'May', 'Sutton', 'Lowery', 'Bowers',
+		'Holland', 'Valentine', 'Ray', 'Vance', 'Lynch', 'Pugh', 'Hardy', 'Harding', 'Hoover', 'Chan',
+		'Wong', 'Wu', 'Li', 'Zhang', 'Wang', 'Liu', 'Yang', 'Huang', 'Zhao', 'Lin',
+		'Barker', 'Frazier', 'Bishop', 'Montgomery', 'Harvey', 'Knight', 'Gilbert', 'Garrett', 'Warner', 'Fuller',
+		'Stone', 'Walsh', 'Franklin', 'Lawson', 'Fields', 'Rowe', 'Parks', 'Howell', 'Abbott', 'Sharp',
+		'Horton', 'Cummings', 'Brewer', 'Huff', 'Barber', 'Reed', 'Bowman', 'Gibbs', 'Davidson', 'Booth',
+		'Lowe', 'Burke', 'Ingram', 'Patton', 'Vargas', 'Higgins', 'Spencer', 'Gardner', 'Stephens', 'Payne',
+		'Pierce', 'Berry', 'Page', 'Rice', 'Hunt', 'Arnold', 'Palmer', 'Black', 'Greene', 'Cross',
+		'Rhodes', 'Hardin', 'Lucas', 'Grant', 'Dixon', 'Gross', 'Cunningham', 'Hansen', 'Olsen', 'Hicks',
+		'Webb', 'Fowler', 'Fox', 'Rose', 'Ball', 'Chapman', 'Banks', 'Day', 'Walton', 'Blackwell',
+		'Richards', 'Wheeler', 'Shepherd', 'Wilkins', 'Atkins', 'Pearson', 'Newton', 'Ballard', 'Ayala', 'Bean',
+		'Clayton', 'Browning', 'Buchanan', 'Buckley', 'Bullock', 'Burgess', 'Burton', 'Calderon', 'Callahan', 'Camacho',
+		'Cannon', 'Carey', 'Carlson', 'Carney', 'Carpenter', 'Carr', 'Carrillo', 'Carroll', 'Carson', 'Case',
+		'Casey', 'Cash', 'Cates', 'Cervantes', 'Chambers', 'Chandler', 'Chaney', 'Charles', 'Chase', 'Christian',
+		'Church', 'Clarkson', 'Clay', 'Clements', 'Cline', 'Cobb', 'Cochran', 'Coffey', 'Cohen', 'Collier',
+		'Combs', 'Compton', 'Conrad', 'Conway', 'Cooley', 'Copeland', 'Cordova', 'Cotton', 'Cowan', 'Crane',
+		'Crawford', 'Creighton', 'Crockett', 'Crosby', 'Crowder', 'Crowe', 'Cuellar', 'Curry', 'Dalton', 'Daniel',
+		'Daniels', 'Daugherty', 'Davenport', 'David', 'Davila', 'Dawson', 'Dayton', 'Dean', 'Decker', 'Delacruz',
+		'Delaney', 'Delgado', 'Dennis', 'Dickerson', 'Dickson', 'Dillard', 'Dillon', 'Dodson', 'Dominguez', 'Donaldson',
+		'Donovan', 'Dorsey', 'Dotson', 'Douglas', 'Downs', 'Doyle', 'Drake', 'Dudley', 'Duffy', 'Duke',
+		'Duncan', 'Dunlap', 'Dunn', 'Duran', 'Durham', 'Dyer', 'Eaton', 'Echevarria', 'Eckert', 'English',
+		'Enriquez', 'Erickson', 'Escobar', 'Esparza', 'Espinoza', 'Estes', 'Estrada', 'Everett', 'Ewing', 'Farley',
+		'Farmer', 'Farrell', 'Faulkner', 'Ferguson', 'Ferris', 'Figueroa', 'Finch', 'Finley', 'Fischer', 'Fitzgerald',
+		'Fitzpatrick', 'Fleming', 'Flynn', 'Foley', 'Forbes', 'Foster', 'Frank', 'Franklin', 'Frederick', 'Frost',
+		'Fry', 'Frye', 'Fuentes', 'Fuller', 'Fulton', 'Gaines', 'Gallagher', 'Gallegos', 'Galloway', 'Gamble',
+		'Gantz', 'Garza', 'Gates', 'Gentry', 'Gibbons', 'Giles', 'Gill', 'Gillespie', 'Gilliam', 'Gilmore',
+		'Glass', 'Glenn', 'Glover', 'Godfrey', 'Golden', 'Goldstein', 'Good', 'Goodman', 'Goodwin', 'Gordon',
+		'Gould', 'Grady', 'Graves', 'Gray', 'Gregory', 'Grimes', 'Guerra', 'Guerrero', 'Gunn', 'Guy',
+		'Haas', 'Hahn', 'Hailey', 'Haley', 'Hall', 'Halverson', 'Hamill', 'Hammond', 'Hampton', 'Hancock',
+		'Haney', 'Hanna', 'Hardy', 'Harmon', 'Harper', 'Harrell', 'Harrington', 'Harris', 'Harrison', 'Hart',
+		'Hartman', 'Harvey', 'Hatfield', 'Hathaway', 'Hauser', 'Hawkins', 'Hayden', 'Hayes', 'Haynes', 'Hayward'
+	];
+
+	/**
+	 * Gets a random element from an array.
+	 * @param {Array} arr - The source array.
+	 * @returns {*} A random element.
+	 */
+	function getRandomElement(arr) {
+		if (arr.length === 0) return '';
+		const randomIndex = Math.floor(Math.random() * arr.length);
+		return arr[randomIndex];
+	}
+
+	/**
+	 * Generates a full name (First Name + Last Name) based on the selected gender.
+	 * @param {string} gender - 'male', 'female', or 'both'.
+	 * @returns {string} A full name.
+	 */
+	function generateFullName(gender) {
+		let firstName = '';
+		let availableFirstNames = [];
+
+		if (gender === 'male') {
+			availableFirstNames = MALE_FIRST_NAMES;
+		} else if (gender === 'female') {
+			availableFirstNames = FEMALE_FIRST_NAMES;
+		} else { // 'both'
+			availableFirstNames = MALE_FIRST_NAMES.concat(FEMALE_FIRST_NAMES);
+		}
+
+		firstName = getRandomElement(availableFirstNames);
+		const lastName = getRandomElement(LAST_NAMES);
+
+		return `${firstName} ${lastName}`;
+	}
+
+	/**
+	 * Generates a batch of unique names.
+	 */
+	function generateNames() {
+		const quantity = parseInt(quantityInput.value);
+		const selectedGender = genderSelect.value;
+
+		// Input validation
+		if (isNaN(quantity) || quantity <= 0) {
+			quantityInput.value = 1; // Reset to minimum allowed
+			showMessageBox('Invalid Input', 'Please enter a valid number greater than 0.');
+			return;
+		}
+		if (quantity > 500) {
+			quantityInput.value = 500; // Reset to max allowed
+			showMessageBox('Quantity Limit', 'The maximum allowed quantity is 500.');
+			return;
+		}
+
+		const generatedNames = new Set();
+		const maxAttempts = quantity * 5; // Prevent infinite loop for large quantities
+		let attempts = 0;
+
+		while (generatedNames.size < quantity && attempts < maxAttempts) {
+			const name = generateFullName(selectedGender);
+			generatedNames.add(name);
+			attempts++;
+		}
+
+		const namesArray = Array.from(generatedNames);
+		resultsDiv.textContent = namesArray.join('\n');
+
+		// Enable copy button and reset text
+		copyBtn.disabled = namesArray.length === 0;
+		copyTextSpan.textContent = 'Copy All';
+
+		if (namesArray.length < quantity) {
+			 showMessageBox('Warning', `Could only generate ${namesArray.length} unique names after ${maxAttempts} attempts.`);
+		}
+	}
+
+	/**
+	 * Copies the content of the results div to the clipboard.
+	 */
+	function copyToClipboard() {
+		const textToCopy = resultsDiv.textContent;
+		if (textToCopy === 'The generated names will appear here.' || textToCopy.trim() === '') {
+			showMessageBox('Nothing to Copy', 'Please generate some names first.');
+			return;
+		}
+
+		// Use document.execCommand('copy') for better compatibility in iframe environments
+		const tempTextarea = document.createElement('textarea');
+		tempTextarea.value = textToCopy;
+		document.body.appendChild(tempTextarea);
+		tempTextarea.select();
+
+		try {
+			document.execCommand('copy');
+			copyTextSpan.textContent = 'Copied!';
+			// Reset text after a delay
+			setTimeout(() => { copyTextSpan.textContent = 'Copy All'; }, 2000);
+		} catch (err) {
+			showMessageBox('Copy Failed', 'Unable to copy text. Please select and copy manually.');
+			console.error('Copy failed:', err);
+		} finally {
+			document.body.removeChild(tempTextarea);
+		}
+	}
+
+	// Attach event listeners
+	generateBtn.addEventListener('click', generateNames);
+	copyBtn.addEventListener('click', copyToClipboard);
+
+	// Initial setup on load
+	window.onload = () => {
+		generateNames();    // Generate initial batch with default settings (Both)
+	};
+</script>
+
+</body>
+</html>

@@ -1,5 +1,5 @@
 const APP_NAV_LINKS = [
-	{ href: '/', label: 'Home' },
+	{ href: '/apps', label: 'Home' },
 	{ href: 'random-emails.html', label: 'Email Generator' },
 	{ href: 'random-names.html', label: 'Name Generator' },
 	{ href: 'random-strings.html', label: 'String Generator' },
@@ -41,7 +41,7 @@ function getCurrentPageLink() {
 }
 
 function getNavigationIcon(href) {
-	if (href === '/') {
+	if (href === '/apps') {
 		return APP_NAV_ICONS['home.svg'];
 	}
 

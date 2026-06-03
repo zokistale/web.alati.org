@@ -1,5 +1,5 @@
 const APP_NAV_LINKS = [
-	{ href: '/apps', label: 'Home' },
+	{ href: '/', label: 'Home' },
 	{ href: 'random-emails.html', label: 'Email Generator' },
 	{ href: 'random-names.html', label: 'Name Generator' },
 	{ href: 'random-strings.html', label: 'String Generator' },

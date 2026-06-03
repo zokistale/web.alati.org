@@ -1,8 +1,9 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, rm, writeFile, copyFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import postcss from 'postcss';
 import { build } from 'esbuild';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -267,7 +268,29 @@ function minifyHtmlTemplateLiterals(source) {
 	return result;
 }
 
+async function buildHashedCssAsset({ entryPoint, outbaseName }) {
+	const sourcePath = path.join(srcDir, entryPoint);
+	const sourceCss = await readFile(sourcePath, 'utf8');
+
+	const configUrl = pathToFileURL(path.join(rootDir, 'postcss.config.mjs')).href;
+	const postcssConfig = await import(configUrl);
+	const result = await postcss(postcssConfig.default.plugins).process(sourceCss, { from: sourcePath, to: `${outbaseName}.css` });
+
+	const outputFile = result.css;
+	const hash = createContentHash(outputFile);
+	const fileName = `${outbaseName}.${hash}.css`;
+	const outFile = path.join(assetsDir, fileName);
+
+	await writeFile(outFile, outputFile);
+
+	return fileName;
+}
+
 async function buildHashedAsset({ entryPoint, outbaseName, extension, options = {} }) {
+	if (extension === 'css') {
+		return buildHashedCssAsset({ entryPoint, outbaseName });
+	}
+
 	const sourcePath = path.join(srcDir, entryPoint);
 	const buildInput = extension === 'js'
 		? {

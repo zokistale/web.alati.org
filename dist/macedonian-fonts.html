@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel=icon href="favicon.ico">
+	<title>Macedonian Fonts</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script src="assets/app-navigation.3efd0ca4.js" defer></script>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="assets/style.8cfa23a6.css">
+</head>
+<body>
+
+<div class="md:flex gap-10">
+	<div data-app-navigation></div>
+	<div>
+		<div class="w-full max-w-lg bg-white dark:bg-gray-900 p-8 md:p-10 rounded-xl shadow-2xl transition-all duration-300">
+			<h1 data-app-page-title class="text-3xl font-bold mb-6 border-b dark:border-gray-700 pb-2"></h1>
+			<p class="mb-6">Macedonian Cyrillic Fonts is a repository of old, pre-unicode Macedonian fonts, which you can freely download. However, if you need to write text in Macedonian Cyrillic, it is far better to use newer fonts with multi-language support.</p>
+
+			<!-- Input Section -->
+			<div class="space-y-4">
+				<div>
+					<label for="fontSelect" class="block text-sm font-medium">Select Font</label>
+					<div class="mt-1 flex items-center gap-2">
+						<select id="fontSelect" class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+							<option value="0">Select a font</option>
+						</select>
+						<button id="prevBtn" class="flex justify-center items-center px-4 h-10 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">
+							PREV
+						</button>
+						<button id="nextBtn" class="flex justify-center items-center px-4 h-10 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">
+							NEXT
+						</button>
+					</div>
+				</div>
+
+				<div id="fontPreview" class="min-h-[288px] text-center bg-[linear-gradient(#808080_16px,_#fff_10px,_#fff_100%)]">
+					<img src="https://font.alati.org/preview/_.png" alt="Font Preview">
+				</div>
+
+				<a id="downloadBtn" href="#" class="w-full flex justify-center items-center px-4 h-10 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98] opacity-50 cursor-not-allowed pointer-events-none" disabled aria-disabled="true">DOWNLOAD</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="module">
+	import { fontDefs } from './data/font-defs.js';
+
+	const fontSelect = document.getElementById('fontSelect');
+	const prevBtn = document.getElementById('prevBtn');
+	const nextBtn = document.getElementById('nextBtn');
+	const fontPreview = document.getElementById('fontPreview');
+	const downloadBtn = document.getElementById('downloadBtn');
+
+	const previewBase = 'https://font.alati.org/preview/';
+	const downloadBase = 'https://font.alati.org/';
+
+	const updateDownloadState = (enabled, slug) => {
+		if (enabled) {
+			downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+			downloadBtn.setAttribute('href', `${downloadBase}${slug}.ttf`);
+			downloadBtn.setAttribute('aria-disabled', 'false');
+			downloadBtn.removeAttribute('disabled');
+		} else {
+			downloadBtn.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+			downloadBtn.setAttribute('href', '#');
+			downloadBtn.setAttribute('aria-disabled', 'true');
+			downloadBtn.setAttribute('disabled', 'true');
+		}
+	};
+
+	const updatePreview = (slug) => {
+		fontPreview.innerHTML = `<img src="${previewBase}${slug}.png" alt="Font Preview">`;
+	};
+
+	const selectFont = (value) => {
+		const selected = fontDefs.find((font) => String(font.value) === String(value));
+		if (!selected) {
+			return;
+		}
+
+		fontSelect.value = String(selected.value);
+		updatePreview(selected.slug);
+		const isEmpty = selected.value === 0 || selected.slug === '_';
+		updateDownloadState(!isEmpty, selected.slug);
+	};
+
+	const getCurrentIndex = () => {
+		return fontDefs.findIndex((font) => String(font.value) === String(fontSelect.value));
+	};
+
+	const populateFontSelect = () => {
+		fontSelect.innerHTML = '';
+		fontDefs.forEach((font) => {
+			const option = document.createElement('option');
+			option.value = String(font.value);
+			option.textContent = font.text;
+			fontSelect.append(option);
+		});
+	};
+
+	populateFontSelect();
+	selectFont(0);
+
+	fontSelect.addEventListener('change', () => selectFont(fontSelect.value));
+
+	prevBtn.addEventListener('click', () => {
+		const currentIndex = getCurrentIndex();
+		if (currentIndex > 0) {
+			selectFont(fontDefs[currentIndex - 1].value);
+		}
+	});
+
+	nextBtn.addEventListener('click', () => {
+		const currentIndex = getCurrentIndex();
+		if (currentIndex < fontDefs.length - 1) {
+			selectFont(fontDefs[currentIndex + 1].value);
+		}
+	});
+</script>
+</body>
+</html>

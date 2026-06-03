@@ -3,7 +3,8 @@ const APP_NAV_LINKS = [
 	{ href: 'random-emails.html', label: 'Email Generator' },
 	{ href: 'random-names.html', label: 'Name Generator' },
 	{ href: 'random-strings.html', label: 'String Generator' },
-	{ href: 'text-transformer.html', label: 'Text Transformer' }
+	{ href: 'text-transformer.html', label: 'Text Transformer' },
+	{ href: 'macedonian-fonts.html', label: 'Macedonian Fonts' }
 ];
 
 const APP_NAV_ICONS = {
@@ -30,6 +31,11 @@ const APP_NAV_ICONS = {
 	'text.svg': `
 		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-[1.2em] shrink-0" aria-hidden="true">
 			<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+		</svg>
+	`,
+	'font.svg': `
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M2.243 4.493v7.5m0 0v7.502m0-7.501h10.5m0-7.5v7.5m0 0v7.501m4.501-8.627 2.25-1.5v10.126m0 0h-2.25m2.25 0h2.25" />
 		</svg>
 	`
 };
@@ -59,6 +65,10 @@ function getNavigationIcon(href) {
 
 	if (href.includes('text')) {
 		return APP_NAV_ICONS['text.svg'];
+	}
+
+	if (href.includes('font')) {
+		return APP_NAV_ICONS['font.svg'];
 	}
 
 	return null;

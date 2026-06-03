@@ -331,6 +331,25 @@ async function copyHtmlFiles(assets) {
 	}
 }
 
+async function copyFolder(source, destination) {
+	await mkdir(destination, { recursive: true });
+	const entries = await readdir(source, { withFileTypes: true });
+
+	for (const entry of entries) {
+		const sourcePath = path.join(source, entry.name);
+		const destinationPath = path.join(destination, entry.name);
+
+		if (entry.isDirectory()) {
+			await copyFolder(sourcePath, destinationPath);
+			continue;
+		}
+
+		if (entry.isFile()) {
+			await copyFile(sourcePath, destinationPath);
+		}
+	}
+}
+
 async function main() {
 	await rm(distDir, { recursive: true, force: true });
 	await mkdir(assetsDir, { recursive: true });
@@ -360,6 +379,8 @@ async function main() {
 		}),
 		copyFile(path.join(srcDir, 'favicon.ico'), path.join(distDir, 'favicon.ico'))
 	]);
+
+	await copyFolder(path.join(srcDir, 'data'), path.join(distDir, 'data'));
 
 	console.log(`Built dist with ${appNavigationFile} and ${styleFile}`);
 	console.log(`HTML files were copied from ${path.relative(rootDir, srcDir)} to ${path.relative(rootDir, distDir)}`);

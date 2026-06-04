@@ -356,9 +356,6 @@
   .min-w-28 {
     min-width: calc(var(--spacing) * 28);
   }
-  .min-w-45 {
-    min-width: calc(var(--spacing) * 45);
-  }
   .min-w-65 {
     min-width: calc(var(--spacing) * 65);
   }
@@ -401,6 +398,9 @@
   .items-end {
     align-items: flex-end;
   }
+  .items-start {
+    align-items: flex-start;
+  }
   .justify-between {
     justify-content: space-between;
   }
@@ -418,6 +418,9 @@
   }
   .gap-4 {
     gap: calc(var(--spacing) * 4);
+  }
+  .gap-5 {
+    gap: calc(var(--spacing) * 5);
   }
   .gap-6 {
     gap: calc(var(--spacing) * 6);

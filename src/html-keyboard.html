@@ -15,7 +15,7 @@
 	<div class="w-full max-w-6xl">
 		<div class="w-full bg-white dark:bg-gray-900 p-8 md:p-10 rounded-xl shadow-2xl transition-all duration-300">
 			<h1 data-app-page-title class="text-3xl font-bold mb-6 border-b dark:border-gray-700 pb-2"></h1>
-			<p class="mb-6">Browse Unicode characters and select them as hexadecimal HTML codes.</p>
+			<p class="mb-6">Browse Unicode characters and select them as unicode or hexadecimal HTML codes.</p>
 
 			<div class="mb-6 flex flex-wrap items-end gap-4">
 				<label class="block min-w-65 flex-1">
@@ -129,6 +129,8 @@
 			button.disabled = true;
 			button.classList.add('cursor-not-allowed', 'opacity-50');
 			return button;
+		} else {
+			button.classList.add('cursor-pointer');
 		}
 
 		button.textContent = String.fromCodePoint(codePoint);
@@ -220,8 +222,8 @@
 
 	clearBtn.addEventListener('click', () => {
 		currentCodePoint = null;
-		previewGlyph.textContent = '?';
-		codeInput.value = '&#x003F;';
+		previewGlyph.textContent = '';
+		codeInput.value = '';
 		previewHint.textContent = 'The character that you have selected is shown here.';
 	});
 

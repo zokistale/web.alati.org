@@ -3,7 +3,6 @@ const ICON_FILE_MAP = {
   email: 'email.svg',
   name: 'name.svg',
   string: 'string.svg',
-  text: 'text.svg',
   transform: 'transform.svg',
   font: 'font.svg',
   html: 'html.svg',

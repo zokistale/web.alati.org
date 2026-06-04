@@ -4,9 +4,9 @@ const APP_NAV_LINKS = [
 	{ href: 'random-names.html', label: 'Name Generator' },
 	{ href: 'random-strings.html', label: 'String Generator' },
 	{ href: 'text-transformer.html', label: 'Text Transformer' },
-	{ href: 'html-keyboard.html', label: 'HTML Keyboard' },
 	{ href: 'macedonian-fonts.html', label: 'Macedonian Fonts' },
-	{ href: 'en-mk-converter.html', label: 'EN-MK Converter' }
+	{ href: 'en-mk-converter.html', label: 'EN-MK Converter' },
+	{ href: 'html-keyboard.html', label: 'HTML Keyboard' },
 ];
 
 const APP_NAV_ICONS = {
@@ -52,12 +52,12 @@ function getNavigationIcon(href) {
 		return APP_NAV_ICONS.font;
 	}
 
-	if (href.includes('html-keyboard')) {
-		return APP_NAV_ICONS.html;
-	}
-
 	if (href.includes('converter')) {
 		return APP_NAV_ICONS.convert;
+	}
+
+	if (href.includes('html-keyboard')) {
+		return APP_NAV_ICONS.html;
 	}
 
 	return null;

@@ -1,16 +1,4 @@
-const ICON_FILE_MAP = {
-  home: 'home.svg',
-  email: 'email.svg',
-  name: 'name.svg',
-  string: 'string.svg',
-  transform: 'transform.svg',
-  font: 'font.svg',
-  html: 'html.svg',
-  copy: 'copy.svg',
-  check: 'check.svg',
-  convert: 'convert.svg',
-  clear: 'clear.svg'
-};
+import { ICON_FILE_MAP } from './icon-file-map.generated.js';
 
 const iconCache = new Map();
 

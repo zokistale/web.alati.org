@@ -21,6 +21,34 @@ function createContentHash(content) {
 	return createHash('sha256').update(content).digest('hex').slice(0, 8);
 }
 
+async function buildIconFileMapModule() {
+	const iconsDir = path.join(srcDir, 'icons');
+	const iconEntries = await readdir(iconsDir, { withFileTypes: true });
+	const iconFiles = iconEntries
+		.filter((entry) => entry.isFile() && entry.name.endsWith('.svg'))
+		.map((entry) => entry.name)
+		.sort();
+
+	const iconMap = iconFiles.reduce((result, fileName) => {
+		result[path.basename(fileName, '.svg')] = fileName;
+		return result;
+	}, {});
+
+	const moduleSource = `// This file is generated automatically by scripts/build.mjs\nexport const ICON_FILE_MAP = ${JSON.stringify(iconMap, null, '	')};\n`;
+	const modulePath = path.join(srcDir, 'js', 'icon-file-map.generated.js');
+
+	let currentSource = null;
+	try {
+		currentSource = await readFile(modulePath, 'utf8');
+	} catch {
+		// ignore missing file
+	}
+
+	if (currentSource !== moduleSource) {
+		await writeFile(modulePath, moduleSource, 'utf8');
+	}
+}
+
 function skipQuotedString(source, startIndex, quote) {
 	let index = startIndex + 1;
 
@@ -376,6 +404,8 @@ async function copyFolder(source, destination) {
 async function main() {
 	await rm(distDir, { recursive: true, force: true });
 	await mkdir(assetsDir, { recursive: true });
+
+	await buildIconFileMapModule();
 
 	const [appFile, styleFile] = await Promise.all([
 		buildHashedAsset({

@@ -297,7 +297,7 @@ async function buildHashedAsset({ entryPoint, outbaseName, extension, options = 
 			stdin: {
 				contents: minifyHtmlTemplateLiterals(await readFile(sourcePath, 'utf8')),
 				loader: 'js',
-				resolveDir: srcDir,
+				resolveDir: path.dirname(sourcePath),
 				sourcefile: sourcePath
 			}
 		}
@@ -332,8 +332,8 @@ async function buildHashedAsset({ entryPoint, outbaseName, extension, options = 
 
 function rewriteHtmlAssetRefs(html, assets) {
 	return html
-		.replace(/src=(['"])app-navigation\.js\1/g, `src="${assets.appNavigation}"`)
-		.replace(/href=(['"])style\.css\1/g, `href="${assets.style}"`)
+		.replace(/src=(['"])(?:js\/)?app(?:-navigation)?\.js\1/g, `src="${assets.app}"`)
+		.replace(/href=(['"])(?:css\/)?style\.css\1/g, `href="${assets.style}"`)
 		.replace(/href=(['"])favicon\.ico\1/g, 'href="favicon.ico"');
 }
 
@@ -346,7 +346,7 @@ async function copyHtmlFiles(assets) {
 		const outputPath = path.join(distDir, entry.name);
 		const html = await readFile(sourcePath, 'utf8');
 		const rewritten = rewriteHtmlAssetRefs(html, {
-			appNavigation: toAssetPath(assets.appNavigation),
+			app: toAssetPath(assets.app),
 			style: toAssetPath(assets.style)
 		});
 
@@ -377,10 +377,10 @@ async function main() {
 	await rm(distDir, { recursive: true, force: true });
 	await mkdir(assetsDir, { recursive: true });
 
-	const [appNavigationFile, styleFile] = await Promise.all([
+	const [appFile, styleFile] = await Promise.all([
 		buildHashedAsset({
-			entryPoint: 'app-navigation.js',
-			outbaseName: 'app-navigation',
+			entryPoint: 'js/app.js',
+			outbaseName: 'app',
 			extension: 'js',
 			options: {
 				platform: 'browser',
@@ -389,7 +389,7 @@ async function main() {
 			}
 		}),
 		buildHashedAsset({
-			entryPoint: 'style.css',
+			entryPoint: 'css/style.css',
 			outbaseName: 'style',
 			extension: 'css'
 		})
@@ -397,15 +397,16 @@ async function main() {
 
 	await Promise.all([
 		copyHtmlFiles({
-			appNavigation: appNavigationFile,
+			app: appFile,
 			style: styleFile
 		}),
 		copyFile(path.join(srcDir, 'favicon.ico'), path.join(distDir, 'favicon.ico'))
 	]);
 
 	await copyFolder(path.join(srcDir, 'data'), path.join(distDir, 'data'));
+	await copyFolder(path.join(srcDir, 'icons'), path.join(distDir, 'icons'));
 
-	console.log(`Built dist with ${appNavigationFile} and ${styleFile}`);
+	console.log(`Built dist with ${appFile} and ${styleFile}`);
 	console.log(`HTML files were copied from ${path.relative(rootDir, srcDir)} to ${path.relative(rootDir, distDir)}`);
 	console.log('Copied favicon.ico to dist');
 }

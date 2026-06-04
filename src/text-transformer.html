@@ -3,10 +3,10 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel=icon href="favicon.ico">
+	<link rel="icon" href="favicon.ico">
 	<title>Text Transformer</title>
-	<script src="app-navigation.js" defer></script>
-	<link rel="stylesheet" href="style.css">
+	<script src="js/app.js" defer></script>
+	<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -36,10 +36,7 @@
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">Title Case</h2>
 						<button onclick="copyToClipboard('titleOutput', 'titleCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-							<path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-							<path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
-							</svg>
+							<x-icon-copy class="h-4 w-4" />
 							<span id="titleCopyText">Copy</span>
 						</button>
 					</div>
@@ -53,10 +50,7 @@
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">Lowercase</h2>
 						<button onclick="copyToClipboard('lowercaseOutput', 'lowercaseCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-							<path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-							<path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
-							</svg>
+							<x-icon-copy class="h-4 w-4" />
 							<span id="lowercaseCopyText">Copy</span>
 						</button>
 					</div>
@@ -70,10 +64,7 @@
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">Uppercase</h2>
 						<button onclick="copyToClipboard('uppercaseOutput', 'uppercaseCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-							<path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-							<path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
-							</svg>
+							<x-icon-copy class="h-4 w-4" />
 							<span id="uppercaseCopyText">Copy</span>
 						</button>
 					</div>
@@ -87,10 +78,7 @@
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">Camel Case</h2>
 						<button onclick="copyToClipboard('camelOutput', 'camelCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-							<path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-							<path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
-							</svg>
+							<x-icon-copy class="h-4 w-4" />
 							<span id="camelCopyText">Copy</span>
 						</button>
 					</div>
@@ -104,10 +92,7 @@
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">Snake Case</h2>
 						<button onclick="copyToClipboard('snakeOutput', 'snakeCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-							<path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-							<path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
-							</svg>
+							<x-icon-copy class="h-4 w-4" />
 							<span id="snakeCopyText">Copy</span>
 						</button>
 					</div>
@@ -121,10 +106,7 @@
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">URL Slug</h2>
 						<button onclick="copyToClipboard('slugOutput', 'slugCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-							<path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-							<path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" />
-							</svg>
+							<x-icon-copy class="h-4 w-4" />
 							<span id="slugCopyText">Copy</span>
 						</button>
 					</div>

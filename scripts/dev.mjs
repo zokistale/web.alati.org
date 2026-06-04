@@ -169,10 +169,17 @@ const serveStatic = async (req, res) => {
 };
 
 const findAvailablePort = (startPort) => new Promise((resolve, reject) => {
-	const probe = http.createServer();
-
 	const tryPort = (port) => {
+		const probe = http.createServer();
+
+		const cleanup = () => {
+			probe.removeAllListeners('error');
+			probe.removeAllListeners('listening');
+		};
+
 		probe.once('error', (error) => {
+			cleanup();
+
 			if (error.code === 'EADDRINUSE') {
 				tryPort(port + 1);
 				return;
@@ -181,10 +188,18 @@ const findAvailablePort = (startPort) => new Promise((resolve, reject) => {
 			reject(error);
 		});
 
-		probe.listen(port, () => {
-			const address = probe.address();
-			probe.close(() => resolve(address.port));
+		probe.once('listening', () => {
+			probe.close((closeError) => {
+				cleanup();
+				if (closeError) {
+					reject(closeError);
+					return;
+				}
+				resolve(port);
+			});
 		});
+
+		probe.listen(port);
 	};
 
 	tryPort(startPort);

@@ -141,6 +141,34 @@ const serveStatic = async (req, res) => {
 		return;
 	}
 
+	if (pathname === '/api/exchange-rates') {
+		console.log('[dev] proxying /api/exchange-rates to NBM');
+		try {
+			const today = new Date();
+			const dateString = `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getFullYear()}`;
+			const url = `https://www.nbrm.mk/KLServiceNOV/EN/GetExchangeRates?StartDate=${dateString}&EndDate=${dateString}`;
+			const upstreamResponse = await fetch(url, { headers: { Accept: 'application/xml' } });
+
+			if (!upstreamResponse.ok) {
+				const errorText = await upstreamResponse.text().catch(() => '');
+				res.writeHead(upstreamResponse.status, { 'Content-Type': 'text/plain', 'Cache-Control': 'no-cache' });
+				res.end(errorText || `Upstream request failed with status ${upstreamResponse.status}`);
+				return;
+			}
+
+			const buffer = Buffer.from(await upstreamResponse.arrayBuffer());
+			res.writeHead(200, {
+				'Content-Type': 'application/xml',
+				'Cache-Control': 'no-cache'
+			});
+			res.end(buffer);
+		} catch (error) {
+			res.writeHead(502, { 'Content-Type': 'text/plain', 'Cache-Control': 'no-cache' });
+			res.end(`Exchange rate proxy error: ${error.message}`);
+		}
+		return;
+	}
+
 	const filePath = path.join(distDir, pathname);
 
 	try {

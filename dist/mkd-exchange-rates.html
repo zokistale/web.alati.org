@@ -33,21 +33,6 @@
 					</tr>
 				</thead>
 				<tbody id="ratesBody" class="bg-white dark:bg-slate-950">
-					<tr class="border-t border-gray-200 dark:border-gray-800">
-						<td class="text-left px-4 py-3">EUR</td>
-						<td class="px-4 py-3">61.38</td>
-						<td class="px-4 py-3">61.99</td>
-					</tr>
-					<tr class="border-t border-gray-200 dark:border-gray-800">
-						<td class="text-left px-4 py-3">USD</td>
-						<td class="px-4 py-3">52.85</td>
-						<td class="px-4 py-3">53.38</td>
-					</tr>
-					<tr class="border-t border-gray-200 dark:border-gray-800">
-						<td class="text-left px-4 py-3">GBP</td>
-						<td class="px-4 py-3">71.06</td>
-						<td class="px-4 py-3">71.78</td>
-					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -60,6 +45,7 @@ const CACHE_TTL = 2 * 60 * 60 * 1000; // 2 hours
 const fetchRatesBtn = document.getElementById('fetchRatesBtn');
 const ratesBody = document.getElementById('ratesBody');
 const statusMessage = document.getElementById('statusMessage');
+const LOCAL_PROXY_PATH = new URL('/api/exchange-rates', window.location.origin).href;
 
 const SAMPLE_RATES = [
 	{ code: 'EUR', buy: 61.38, sell: 61.99 },
@@ -204,11 +190,18 @@ function parseExchangeRatesXml(xmlText) {
 async function fetchRatesFromNbm() {
 	const today = new Date();
 	const dateString = `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getFullYear()}`;
-	const url = `https://www.nbrm.mk/KLServiceNOV/EN/GetExchangeRates?StartDate=${dateString}&EndDate=${dateString}`;
+	const host = window.location.hostname.toLowerCase();
+	const useProxy = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+	const url = useProxy
+		? LOCAL_PROXY_PATH
+		: `https://www.nbrm.mk/KLServiceNOV/EN/GetExchangeRates?StartDate=${dateString}&EndDate=${dateString}`;
 
-	const response = await fetch(url, {
-		headers: { Accept: 'application/xml' },
-	});
+	const options = {};
+	if (!useProxy) {
+		options.headers = { Accept: 'application/xml' };
+	}
+
+	const response = await fetch(url, options);
 
 	if (!response.ok) {
 		throw new Error(`Request failed with status ${response.status}`);
@@ -229,7 +222,7 @@ async function updateRates() {
 	const cachedRates = loadCachedRates();
 	if (cachedRates) {
 		renderRates(cachedRates);
-		setStatus('Loaded cached rates from localStorage.');
+		setTimeout(() => setStatus('Reloaded cached rates.'), 1000);
 		return;
 	}
 
@@ -246,7 +239,11 @@ async function updateRates() {
 		saveRatesToCache(rates);
 		setStatus('Live rates loaded and cached for 2 hours.');
 	} catch (error) {
-		setStatus(error.message || 'Unable to fetch exchange rates. If you are hosting this as static files, the NBM endpoint may be blocked by CORS.', true);
+		const message = error.message || 'Unable to fetch exchange rates.';
+		const hint = /failed to fetch/i.test(message)
+			? ' The NBM endpoint does not allow direct browser access from this origin, so local dev uses a proxy when running on localhost.'
+			: '';
+		setStatus(`${message}${hint}`, true);
 	} finally {
 		fetchRatesBtn.disabled = false;
 	}
@@ -254,8 +251,10 @@ async function updateRates() {
 
 fetchRatesBtn.addEventListener('click', updateRates);
 
-if (loadCachedRates()) {
-	setStatus('Cached rates are available. Click to refresh.');
+const cachedRates = loadCachedRates();
+if (cachedRates) {
+	renderRates(cachedRates);
+	setStatus('Loaded cached rates. Click to refresh.');
 } else {
 	setStatus('Click to fetch live exchange rates from NBM.');
 }

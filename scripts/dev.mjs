@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 const distDir = path.join(rootDir, 'dist');
 const srcDir = path.join(rootDir, 'src');
-const port = Number(process.env.PORT || 4173);
+const preferredPort = Number(process.env.PORT || 4173);
 
 let clients = [];
 let buildQueued = false;
@@ -168,7 +168,30 @@ const serveStatic = async (req, res) => {
 	}
 };
 
-const startServer = () => {
+const findAvailablePort = (startPort) => new Promise((resolve, reject) => {
+	const probe = http.createServer();
+
+	const tryPort = (port) => {
+		probe.once('error', (error) => {
+			if (error.code === 'EADDRINUSE') {
+				tryPort(port + 1);
+				return;
+			}
+
+			reject(error);
+		});
+
+		probe.listen(port, () => {
+			const address = probe.address();
+			probe.close(() => resolve(address.port));
+		});
+	};
+
+	tryPort(startPort);
+});
+
+const startServer = async () => {
+	const port = await findAvailablePort(preferredPort);
 	const server = http.createServer(serveStatic);
 
 	server.listen(port, () => {
@@ -191,7 +214,7 @@ const main = async () => {
 	await ensureDistExists();
 	await performBuild();
 	watchSource();
-	startServer();
+	await startServer();
 };
 
 main().catch((error) => {

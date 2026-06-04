@@ -4,6 +4,7 @@ const APP_NAV_LINKS = [
 	{ href: 'random-names.html', label: 'Name Generator' },
 	{ href: 'random-strings.html', label: 'String Generator' },
 	{ href: 'text-transformer.html', label: 'Text Transformer' },
+	{ href: 'html-keyboard.html', label: 'HTML Keyboard' },
 	{ href: 'macedonian-fonts.html', label: 'Macedonian Fonts' },
 	{ href: 'en-mk-converter.html', label: 'EN-MK Converter' }
 ];
@@ -16,7 +17,8 @@ const APP_NAV_ICONS = {
 	text: '<x-icon-text class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-text>',
 	transform: '<x-icon-transform class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-transform>',
 	convert: '<x-icon-convert class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-convert>',
-	font: '<x-icon-font class="size-6" aria-hidden="true"></x-icon-font>'
+	font: '<x-icon-font class="size-6" aria-hidden="true"></x-icon-font>',
+	html: '<x-icon-html class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-html>'
 };
 
 const currentPage = window.location.pathname.split('/').pop();
@@ -48,6 +50,10 @@ function getNavigationIcon(href) {
 
 	if (href.includes('font')) {
 		return APP_NAV_ICONS.font;
+	}
+
+	if (href.includes('html-keyboard')) {
+		return APP_NAV_ICONS.html;
 	}
 
 	if (href.includes('converter')) {

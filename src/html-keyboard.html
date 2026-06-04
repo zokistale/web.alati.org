@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="favicon.ico">
+	<title>HTML Keyboard</title>
+	<script src="js/app.js" defer></script>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="md:flex gap-10">
+	<div data-app-navigation></div>
+	<div class="w-full max-w-6xl">
+		<div class="w-full bg-white dark:bg-gray-900 p-8 md:p-10 rounded-xl shadow-2xl transition-all duration-300">
+			<h1 data-app-page-title class="text-3xl font-bold mb-6 border-b dark:border-gray-700 pb-2"></h1>
+			<p class="mb-6">Browse Unicode characters and select them as hexadecimal HTML codes.</p>
+
+			<div class="mb-6 flex flex-wrap items-end gap-4">
+				<label class="block min-w-65 flex-1">
+					<span class="block text-sm font-medium text-gray-700 dark:text-gray-200">Select set</span>
+					<select id="setSelect" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
+					</select>
+				</label>
+				<div class="flex items-center gap-2">
+					<button id="prevBtn" type="button" class="flex justify-center items-center px-4 h-10 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">
+						PREV
+					</button>
+					<button id="nextBtn" type="button" class="flex justify-center items-center px-4 h-10 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">
+						NEXT
+					</button>
+				</div>
+			</div>
+
+			<p class="text-sm text-gray-500 dark:text-gray-400">Click a character to preview its hexadecimal HTML code.</p>
+			<div id="keyboardGrid" class="mt-4 grid grid-cols-16 gap-2"></div>
+
+			<div class="mt-8 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+				<section class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-6 shadow-sm">
+					<p class="text-xs uppercase tracking-[0.25em] text-indigo-600 dark:text-indigo-300">Selected character</p>
+					<div class="mt-4 flex flex-wrap items-center gap-6">
+						<div id="previewGlyph" class="flex min-h-28 min-w-28 items-center justify-center rounded-2xl border border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-5xl text-gray-700 dark:text-gray-100 shadow-inner">?</div>
+						<div class="flex-1 min-w-70">
+							<label for="codeInput" class="text-sm font-medium text-gray-700 dark:text-gray-200">Hexadecimal HTML code</label>
+							<div class="mt-2 flex flex-wrap items-center gap-2">
+								<input id="codeInput" type="text" readonly value="&#x003F;" class="w-full min-w-45 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-base text-gray-800 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+								<button id="copyBtn" type="button" class="inline-flex items-center gap-2 rounded-lg border border-transparent bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+									<x-icon-copy class="h-4 w-4" aria-hidden="true"></x-icon-copy>
+									<span>Copy</span>
+								</button>
+								<button id="clearBtn" type="button" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+									<x-icon-clear class="h-4 w-4" aria-hidden="true"></x-icon-clear>
+									<span>Clear</span>
+								</button>
+							</div>
+							<p id="previewHint" class="mt-2 text-sm text-gray-500 dark:text-gray-400">The character that you have selected is shown here.</p>
+						</div>
+					</div>
+				</section>
+
+				<aside class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+					<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">How to use</h2>
+					<ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-gray-600 dark:text-gray-300">
+						<li>Pick a Unicode set from the dropdown.</li>
+						<li>Use PREV and NEXT to move through the available groups.</li>
+						<li>Click any cell to show the character and its hexadecimal HTML entity below.</li>
+						<li>Copy or clear the code from the action buttons next to the output field.</li>
+					</ul>
+				</aside>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="module">
+	const unicodeSets = [
+		{ label: 'Basic Latin', start: 0x20, end: 0x7E },
+		{ label: 'Latin Extended-A', start: 0x100, end: 0x17F },
+		{ label: 'Latin Extended-B', start: 0x180, end: 0x24F },
+		{ label: 'IPA Extensions', start: 0x250, end: 0x2AF },
+		{ label: 'Greek and Coptic', start: 0x370, end: 0x3FF },
+		{ label: 'Cyrillic', start: 0x400, end: 0x4FF },
+		{ label: 'Cyrillic Supplement', start: 0x500, end: 0x52F },
+		{ label: 'Hebrew', start: 0x590, end: 0x5FF },
+		{ label: 'Arabic', start: 0x600, end: 0x6FF },
+		{ label: 'Devanagari', start: 0x900, end: 0x97F },
+		{ label: 'Miscellaneous Symbols', start: 0x2600, end: 0x26FF },
+		{ label: 'Dingbats', start: 0x2700, end: 0x27BF }
+	];
+
+	const setSelect = document.getElementById('setSelect');
+	const prevBtn = document.getElementById('prevBtn');
+	const nextBtn = document.getElementById('nextBtn');
+	const keyboardGrid = document.getElementById('keyboardGrid');
+	const previewGlyph = document.getElementById('previewGlyph');
+	const codeInput = document.getElementById('codeInput');
+	const previewHint = document.getElementById('previewHint');
+	const copyBtn = document.getElementById('copyBtn');
+	const clearBtn = document.getElementById('clearBtn');
+
+	let currentSetIndex = 0;
+	let currentCodePoint = null;
+
+	function toHex(codePoint) {
+		return codePoint.toString(16).toUpperCase().padStart(4, '0');
+	}
+
+	function toHtmlCode(codePoint) {
+		return `&#x${toHex(codePoint)};`;
+	}
+
+	function getCellCodePoint(index) {
+		const set = unicodeSets[currentSetIndex];
+		const codePoint = set.start + index;
+		return codePoint <= set.end ? codePoint : null;
+	}
+
+	function makeCell(index) {
+		const codePoint = getCellCodePoint(index);
+		const button = document.createElement('button');
+		button.type = 'button';
+		button.className = 'group flex aspect-square items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-lg text-gray-700 dark:text-gray-100 shadow-sm transition duration-150 hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950 focus:outline-none focus:ring-2 focus:ring-indigo-500';
+		button.title = codePoint ? `U+${toHex(codePoint)} — ${toHtmlCode(codePoint)}` : 'No character in this range';
+		button.setAttribute('aria-label', codePoint ? `Character ${String.fromCodePoint(codePoint)} with code ${toHtmlCode(codePoint)}` : 'Empty cell');
+		button.dataset.codePoint = String(codePoint ?? '');
+
+		if (!codePoint) {
+			button.disabled = true;
+			button.classList.add('cursor-not-allowed', 'opacity-50');
+			return button;
+		}
+
+		button.textContent = String.fromCodePoint(codePoint);
+		button.addEventListener('click', () => updateSelection(codePoint));
+		return button;
+	}
+
+	function renderGrid() {
+		keyboardGrid.innerHTML = '';
+		for (let index = 0; index < 256; index += 1) {
+			keyboardGrid.appendChild(makeCell(index));
+		}
+	}
+
+	function populateSetSelect() {
+		setSelect.innerHTML = '';
+		unicodeSets.forEach((set, index) => {
+			const option = document.createElement('option');
+			option.value = String(index);
+			option.textContent = set.label;
+			setSelect.append(option);
+		});
+	}
+
+	function updateSelection(codePoint) {
+		currentCodePoint = codePoint;
+		const glyph = String.fromCodePoint(codePoint);
+		previewGlyph.textContent = glyph;
+		codeInput.value = toHtmlCode(codePoint);
+		previewHint.textContent = 'The character that you have selected is shown here.';
+	}
+
+	function selectSet(index) {
+		currentSetIndex = index;
+		setSelect.value = String(index);
+		renderGrid();
+		const startPoint = getCellCodePoint(0);
+		if (startPoint) {
+			updateSelection(startPoint);
+		}
+	}
+
+	setSelect.addEventListener('change', () => {
+		selectSet(Number(setSelect.value));
+	});
+
+	prevBtn.addEventListener('click', () => {
+		if (currentSetIndex > 0) {
+			selectSet(currentSetIndex - 1);
+		}
+	});
+
+	nextBtn.addEventListener('click', () => {
+		if (currentSetIndex < unicodeSets.length - 1) {
+			selectSet(currentSetIndex + 1);
+		}
+	});
+
+	copyBtn.addEventListener('click', async () => {
+		const text = codeInput.value;
+		const copyText = async () => {
+			if (navigator.clipboard?.writeText) {
+				await navigator.clipboard.writeText(text);
+				return true;
+			}
+
+			const textarea = document.createElement('textarea');
+			textarea.value = text;
+			textarea.setAttribute('readonly', '');
+			textarea.style.position = 'fixed';
+			textarea.style.top = '-9999px';
+			document.body.appendChild(textarea);
+			textarea.select();
+			document.execCommand('copy');
+			document.body.removeChild(textarea);
+			return true;
+		};
+
+		try {
+			await copyText();
+			copyBtn.innerHTML = '<x-icon-check class="h-4 w-4" aria-hidden="true"></x-icon-check><span>Copied!</span>';
+			setTimeout(() => {
+				copyBtn.innerHTML = '<x-icon-copy class="h-4 w-4" aria-hidden="true"></x-icon-copy><span>Copy</span>';
+			}, 1800);
+		} catch (error) {
+			console.error('Unable to copy code.', error);
+		}
+	});
+
+	clearBtn.addEventListener('click', () => {
+		currentCodePoint = null;
+		previewGlyph.textContent = '?';
+		codeInput.value = '&#x003F;';
+		previewHint.textContent = 'The character that you have selected is shown here.';
+	});
+
+	populateSetSelect();
+	selectSet(0);
+</script>
+</body>
+</html>

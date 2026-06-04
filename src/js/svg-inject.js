@@ -6,6 +6,7 @@ const ICON_FILE_MAP = {
   text: 'text.svg',
   transform: 'transform.svg',
   font: 'font.svg',
+  html: 'html.svg',
   copy: 'copy.svg',
   check: 'check.svg',
   convert: 'convert.svg',

@@ -11,6 +11,7 @@ This website offers a collection of useful browser-based tools for generating pl
 - **Text Transformer** — transform text into title-form headings, URL slugs, and cleaned-up formats.
 - **Macedonian Fonts** — browse historic Macedonian Cyrillic fonts with preview and download support.
 - **EN-MK Converter** — convert between Latin and Macedonian Cyrillic alphabets, including legacy font-style text.
+- **HTML Keyboard** — browse Unicode characters and select them as hexadecimal HTML codes.
 
 ## Build
 

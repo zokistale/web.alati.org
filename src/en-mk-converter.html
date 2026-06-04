@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="favicon.ico">
+	<title>EN-MK Converter</title>
+	<script src="app-navigation.js" defer></script>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="md:flex gap-10">
+	<div data-app-navigation></div>
+	<div>
+		<div class="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 md:p-10 rounded-xl shadow-2xl transition-all duration-300">
+			<h1 data-app-page-title class="text-3xl font-bold mb-6 border-b dark:border-gray-700 pb-2"></h1>
+			<p class="mb-6">Convert text between English Latin and Macedonian Cyrillic alphabets, including the legacy Latin-font style used in older Macedonian documents.</p>
+
+			<div class="space-y-8">
+				<section>
+					<h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-700 dark:text-indigo-300">Select the conversion method</h2>
+					<div id="methodOptions" class="mt-4 grid gap-3">
+						<label class="method-card block rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50/70 dark:hover:border-indigo-500 dark:hover:bg-gray-800/90 cursor-pointer">
+							<input type="radio" name="conversionMethod" value="mk-to-en" class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500" checked>
+							<span class="ml-3 inline-block">
+								<span class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Transliterate from MK Cyrillic to EN Latin</span>
+								<span class="mt-1 block text-xs text-gray-500 dark:text-gray-300 font-mono">о п ш ѓ л ч ќ ⇢ o p sh gj l ch kj</span>
+							</span>
+							<p class="mt-3 text-sm text-gray-600 dark:text-gray-300 hidden" data-method-description="mk-to-en">Transliterates Macedonian Cyrillic text written in UTF-8 or Windows-1251 character encoding into the English Latin alphabet. Groups such as “ш” → “sh” and “џ” → “dzh” are handled as single transliteration units.</p>
+						</label>
+
+						<label class="method-card block rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50/70 dark:hover:border-indigo-500 dark:hover:bg-gray-800/90 cursor-pointer">
+							<input type="radio" name="conversionMethod" value="en-to-mk" class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+							<span class="ml-3 inline-block">
+								<span class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Transliterate from EN Latin to MK Cyrillic</span>
+								<span class="mt-1 block text-xs text-gray-500 dark:text-gray-300 font-mono">o p sh gj l ch kj ⇢ о п ш ѓ л ч ќ</span>
+							</span>
+							<p class="mt-3 text-sm text-gray-600 dark:text-gray-300 hidden" data-method-description="en-to-mk">Transliterates Latin text into Macedonian Cyrillic, treating multi-letter groups such as “sh” and “kj” as one Macedonian character. The letters “q”, “w”, “x”, and “y” are kept as-is.</p>
+						</label>
+
+						<label class="method-card block rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50/70 dark:hover:border-indigo-500 dark:hover:bg-gray-800/90 cursor-pointer">
+							<input type="radio" name="conversionMethod" value="mk-to-font" class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+							<span class="ml-3 inline-block">
+								<span class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Convert from MK Cyrillic to MK with Latin font</span>
+								<span class="mt-1 block text-xs text-gray-500 dark:text-gray-300 font-mono">о п ш ѓ л ч ќ ⇢ o p { | l ~ }</span>
+							</span>
+							<p class="mt-3 text-sm text-gray-600 dark:text-gray-300 hidden" data-method-description="mk-to-font">This legacy conversion turns Macedonian Cyrillic letters into the old Latin-style symbols used by pre-Unicode Macedonian fonts. The examples “ш” → “{” and “ч” → “~” are supported here.</p>
+						</label>
+
+						<label class="method-card block rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50/70 dark:hover:border-indigo-500 dark:hover:bg-gray-800/90 cursor-pointer">
+							<input type="radio" name="conversionMethod" value="font-to-mk" class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+							<span class="ml-3 inline-block">
+								<span class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Convert from MK with Latin font to MK Cyrillic</span>
+								<span class="mt-1 block text-xs text-gray-500 dark:text-gray-300 font-mono">o p { | l ~ } ⇢ о п ш ѓ л ч ќ</span>
+							</span>
+							<p class="mt-3 text-sm text-gray-600 dark:text-gray-300 hidden" data-method-description="font-to-mk">This converts old-style font-encoded text back into modern Macedonian Cyrillic, including examples such as “|” → “ѓ” and “w” → “њ”.</p>
+						</label>
+					</div>
+				</section>
+
+				<section>
+					<h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-700 dark:text-indigo-300">Convert case</h2>
+					<div class="mt-4 flex flex-wrap gap-3">
+						<label class="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 shadow-sm cursor-pointer">
+							<input type="radio" name="caseMode" value="unchanged" checked class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+							<span>Unchanged</span>
+						</label>
+						<label class="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 shadow-sm cursor-pointer">
+							<input type="radio" name="caseMode" value="lowercase" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+							<span>Lowercase</span>
+						</label>
+						<label class="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 shadow-sm cursor-pointer">
+							<input type="radio" name="caseMode" value="uppercase" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+							<span>Uppercase</span>
+						</label>
+					</div>
+				</section>
+
+				<section class="grid gap-6 lg:grid-cols-2">
+					<div class="space-y-3">
+						<div class="flex items-center justify-between gap-3">
+							<label for="inputText" class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Input</label>
+							<button id="clearInputBtn" type="button" class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer" title="Clear input">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+									<path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+								</svg>
+								<span>Clear</span>
+							</button>
+						</div>
+						<textarea id="inputText" rows="8" class="block w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Type or paste the text to convert here..."></textarea>
+						<p class="text-xs text-gray-500 dark:text-gray-300">The text to be converted goes here.</p>
+					</div>
+
+					<div class="space-y-3">
+						<div class="flex items-center justify-between gap-3">
+							<label for="outputText" class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Output</label>
+							<button id="copyOutputBtn" type="button" class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer" title="Copy output">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+									<path d="M7 9a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9Z" />
+									<path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2V5h6a2 2 0 0 0-2-2H5Z" />
+								</svg>
+								<span>Copy</span>
+							</button>
+						</div>
+						<textarea id="outputText" rows="8" readonly class="block w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+						<p class="text-xs text-gray-500 dark:text-gray-300">The converted text goes here.</p>
+					</div>
+				</section>
+
+				<div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+					<p id="statusMessage" class="text-sm text-amber-700 dark:text-amber-300" aria-live="polite"></p>
+					<button id="convertBtn" type="button" class="inline-flex justify-center items-center rounded-lg border border-transparent bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">Convert</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	const methodCards = Array.from(document.querySelectorAll('input[name="conversionMethod"]'));
+	const methodDescriptions = Array.from(document.querySelectorAll('[data-method-description]'));
+	const inputText = document.getElementById('inputText');
+	const outputText = document.getElementById('outputText');
+	const clearInputBtn = document.getElementById('clearInputBtn');
+	const copyOutputBtn = document.getElementById('copyOutputBtn');
+	const convertBtn = document.getElementById('convertBtn');
+	const statusMessage = document.getElementById('statusMessage');
+
+	const CYRILLIC_TO_LATIN = {
+		а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', ѓ: 'gj', е: 'e', ж: 'zh', з: 'z', ѕ: 'dz',
+		и: 'i', ј: 'j', к: 'k', л: 'l', љ: 'lj', м: 'm', н: 'n', њ: 'nj', о: 'o', п: 'p',
+		р: 'r', с: 's', т: 't', ќ: 'kj', у: 'u', ф: 'f', х: 'h', ц: 'c', ч: 'ch', џ: 'dzh', ш: 'sh'
+	};
+
+	const LATIN_TO_CYRILLIC = {
+		a: 'а', b: 'б', c: 'ц', d: 'д', e: 'е', f: 'ф', g: 'г', h: 'х', i: 'и', j: 'ј',
+		k: 'к', l: 'л', m: 'м', n: 'н', o: 'о', p: 'п', q: 'q', r: 'р', s: 'с', t: 'т',
+		u: 'у', v: 'в', w: 'w', x: 'x', y: 'y', z: 'з',
+		sh: 'ш', zh: 'ж', dz: 'ѕ', dzh: 'џ', ch: 'ч', lj: 'љ', nj: 'њ', gj: 'ѓ', kj: 'ќ'
+	};
+
+	const CYRILLIC_TO_LEGACY = {
+		а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', ѓ: '|', е: 'e', ж: '`', з: 'z', ѕ: 'y',
+		и: 'i', ј: 'j', к: 'k', л: 'l', љ: 'q', м: 'm', н: 'n', њ: 'w', о: 'o', п: 'p',
+		р: 'r', с: 's', т: 't', ќ: '}', у: 'u', ф: 'f', х: 'h', ц: 'c', ч: '~', џ: 'x', ш: '{',
+		А: 'A', Б: 'B', В: 'V', Г: 'G', Д: 'D', Ѓ: '\\', Е: 'E', Ж: '@', З: 'Z', Ѕ: 'Y',
+		И: 'I', Ј: 'J', К: 'K', Л: 'L', Љ: 'Q', М: 'M', Н: 'N', Њ: 'W', О: 'O', П: 'P',
+		Р: 'R', С: 'S', Т: 'T', Ќ: ']', У: 'U', Ф: 'F', Х: 'H', Ц: 'C', Ч: '^', Џ: 'X', Ш: '['
+	};
+
+	const LEGACY_TO_CYRILLIC = {
+		a: 'а', b: 'б', c: 'ц', d: 'д', e: 'е', f: 'ф', g: 'г', h: 'х', i: 'и', j: 'ј',
+		k: 'к', l: 'л', m: 'м', n: 'н', o: 'о', p: 'п', q: 'љ', r: 'р', s: 'с', t: 'т',
+		u: 'у', v: 'в', w: 'њ', x: 'џ', y: 'ѕ', z: 'з',
+		'|': 'ѓ', '`': 'ж', '{': 'ш', '}': 'ќ', '~': 'ч',
+		A: 'А', B: 'Б', C: 'Ц', D: 'Д', E: 'Е', F: 'Ф', G: 'Г', H: 'Х', I: 'И', J: 'Ј',
+		K: 'К', L: 'Л', M: 'М', N: 'Н', O: 'О', P: 'П', Q: 'Љ', R: 'Р', S: 'С', T: 'Т',
+		U: 'У', V: 'В', W: 'Њ', X: 'Џ', Y: 'Ѕ', Z: 'З',
+		'\\': 'Ѓ', '@': 'Ж', ']': 'Ќ', '^': 'Ч', '[': 'Ш'
+	};
+
+	function updateMethodDescriptions() {
+		const selected = document.querySelector('input[name="conversionMethod"]:checked');
+		methodDescriptions.forEach((description) => {
+			description.classList.toggle('hidden', description.dataset.methodDescription !== selected.value);
+		});
+	}
+
+	function applyCase(text, mode) {
+		if (mode === 'lowercase') {
+			return text.toLowerCase();
+		}
+
+		if (mode === 'uppercase') {
+			return text.toUpperCase();
+		}
+
+		return text;
+	}
+
+	function capitalizeTransliteration(value) {
+		return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+	}
+
+	function transliterateCyrillicToLatin(text) {
+		return Array.from(text).map((char) => {
+			const mapped = CYRILLIC_TO_LATIN[char.toLowerCase()] ?? char;
+
+			if (char !== char.toLowerCase() && mapped !== char) {
+				return mapped.length > 1 ? capitalizeTransliteration(mapped) : mapped.toUpperCase();
+			}
+
+			return mapped;
+		}).join('');
+	}
+
+	function transliterateLatinToCyrillic(text) {
+		const lower = text.toLowerCase();
+		const patterns = Object.keys(LATIN_TO_CYRILLIC).sort((a, b) => b.length - a.length);
+		let result = '';
+		let index = 0;
+
+		while (index < lower.length) {
+			const match = patterns.find((pattern) => lower.startsWith(pattern, index));
+			if (match) {
+				const mapped = LATIN_TO_CYRILLIC[match];
+				result += /[A-Z]/.test(text[index]) ? mapped.toUpperCase() : mapped;
+				index += match.length;
+			} else {
+				result += text[index];
+				index += 1;
+			}
+		}
+
+		return result;
+	}
+
+	function convertLegacyToCyrillic(text) {
+		return Array.from(text).map((char) => LEGACY_TO_CYRILLIC[char] ?? char).join('');
+	}
+
+	function convertCyrillicToLegacy(text) {
+		return Array.from(text).map((char) => CYRILLIC_TO_LEGACY[char] ?? char).join('');
+	}
+
+	function convertText() {
+		const source = inputText.value;
+		const mode = document.querySelector('input[name="caseMode"]:checked')?.value || 'unchanged';
+
+		if (!source.trim()) {
+			statusMessage.textContent = 'Please enter text to convert.';
+			outputText.value = '';
+			return;
+		}
+
+		statusMessage.textContent = '';
+
+		const selectedMethod = document.querySelector('input[name="conversionMethod"]:checked')?.value || 'mk-to-en';
+		let result = source;
+
+		if (selectedMethod === 'mk-to-en') {
+			result = transliterateCyrillicToLatin(source);
+		} else if (selectedMethod === 'en-to-mk') {
+			result = transliterateLatinToCyrillic(source);
+		} else if (selectedMethod === 'mk-to-font') {
+			result = convertCyrillicToLegacy(source);
+		} else if (selectedMethod === 'font-to-mk') {
+			result = convertLegacyToCyrillic(source);
+		}
+
+		outputText.value = applyCase(result, mode);
+	}
+
+	async function copyOutput() {
+		if (!outputText.value.trim()) {
+			statusMessage.textContent = 'There is nothing to copy yet.';
+			return;
+		}
+
+		try {
+			await navigator.clipboard.writeText(outputText.value);
+			const originalText = copyOutputBtn.querySelector('span').textContent;
+			copyOutputBtn.querySelector('span').textContent = 'Copied!';
+			setTimeout(() => {
+				copyOutputBtn.querySelector('span').textContent = originalText;
+			}, 1500);
+		} catch (error) {
+			statusMessage.textContent = 'Copy failed. Please select the text manually instead.';
+		}
+	}
+
+	methodCards.forEach((radio) => {
+		radio.addEventListener('change', updateMethodDescriptions);
+	});
+
+	clearInputBtn.addEventListener('click', () => {
+		inputText.value = '';
+		outputText.value = '';
+		statusMessage.textContent = 'Input cleared.';
+	});
+
+	convertBtn.addEventListener('click', convertText);
+	copyOutputBtn.addEventListener('click', copyOutput);
+
+	updateMethodDescriptions();
+</script>
+</body>
+</html>

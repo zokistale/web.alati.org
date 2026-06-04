@@ -74,6 +74,22 @@
 		fontPreview.innerHTML = `<img src="${previewBase}${slug}.png" alt="Font Preview">`;
 	};
 
+	const updateNavButtons = (index) => {
+		const prevDisabled = index <= 0;
+		const nextDisabled = index >= fontDefs.length - 1;
+
+		prevBtn.disabled = prevDisabled;
+	nextBtn.disabled = nextDisabled;
+
+		prevBtn.classList.toggle('opacity-50', prevDisabled);
+		prevBtn.classList.toggle('cursor-not-allowed', prevDisabled);
+		nextBtn.classList.toggle('opacity-50', nextDisabled);
+		nextBtn.classList.toggle('cursor-not-allowed', nextDisabled);
+
+		prevBtn.setAttribute('aria-disabled', String(prevDisabled));
+		nextBtn.setAttribute('aria-disabled', String(nextDisabled));
+	};
+
 	const selectFont = (value) => {
 		const selected = fontDefs.find((font) => String(font.value) === String(value));
 		if (!selected) {
@@ -84,6 +100,7 @@
 		updatePreview(selected.slug);
 		const isEmpty = selected.value === 0 || selected.slug === '_';
 		updateDownloadState(!isEmpty, selected.slug);
+		updateNavButtons(fontDefs.findIndex((font) => String(font.value) === String(selected.value)));
 	};
 
 	const getCurrentIndex = () => {

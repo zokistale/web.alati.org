@@ -6,7 +6,7 @@
 	<link rel="icon" href="favicon.ico">
 	<title>HTML Keyboard</title>
 	<script src="assets/app.dd75c6c8.js" defer></script>
-	<link rel="stylesheet" href="assets/style.2c08fea1.css">
+	<link rel="stylesheet" href="assets/style.2c4a07e5.css">
 </head>
 <body>
 
@@ -36,7 +36,7 @@
 			<p class="text-sm text-gray-500 dark:text-gray-400">Click a character to preview its hexadecimal HTML code.</p>
 			<div id="keyboardGrid" class="mt-4 grid grid-cols-16 gap-2"></div>
 
-			<div class="mt-8 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+			<div class="mt-8 grid gap-6 xl:grid-cols-2">
 				<section class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-6 shadow-sm">
 					<p class="text-xs uppercase tracking-[0.25em] text-indigo-600 dark:text-indigo-300">Selected character</p>
 					<div class="mt-4 flex flex-wrap items-start gap-6">
@@ -257,9 +257,7 @@
 		{ label: 'Ornamental Dingbats', start: 0x1F650, end: 0x1F67F },
 		{ label: 'Transport and Map Symbols', start: 0x1F680, end: 0x1F6FF },
 		{ label: 'Supplemental Arrows-C', start: 0x1F800, end: 0x1F8FF },
-		{ label: 'Supplemental Symbols and Pictographs', start: 0x1F900, end: 0x1F9FF },
-		{ label: 'Symbols and Pictographs Extended-A', start: 0x1FA00, end: 0x1FA6F },
-		{ label: 'Symbols for Legacy Computing', start: 0x1FB00, end: 0x1FBFF }
+		{ label: 'Supplemental Symbols and Pictographs', start: 0x1F900, end: 0x1F9FF }
 	];
 
 	const setSelect = document.getElementById('setSelect');
@@ -337,10 +335,27 @@
 		unicodeInput.value = `U+${toHex(codePoint)}`;
 	}
 
+	function updateNavButtons() {
+		const prevDisabled = currentSetIndex <= 0;
+		const nextDisabled = currentSetIndex >= unicodeSets.length - 1;
+
+		prevBtn.disabled = prevDisabled;
+		nextBtn.disabled = nextDisabled;
+
+		prevBtn.classList.toggle('opacity-50', prevDisabled);
+		prevBtn.classList.toggle('cursor-not-allowed', prevDisabled);
+		nextBtn.classList.toggle('opacity-50', nextDisabled);
+		nextBtn.classList.toggle('cursor-not-allowed', nextDisabled);
+
+		prevBtn.setAttribute('aria-disabled', String(prevDisabled));
+		nextBtn.setAttribute('aria-disabled', String(nextDisabled));
+	}
+
 	function selectSet(index) {
 		currentSetIndex = index;
 		setSelect.value = String(index);
 		renderGrid();
+		updateNavButtons();
 	}
 
 	setSelect.addEventListener('change', () => {

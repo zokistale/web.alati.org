@@ -4,6 +4,7 @@ export const ICON_FILE_MAP = {
 	"clear": "clear.svg",
 	"convert": "convert.svg",
 	"copy": "copy.svg",
+	"dollar": "dollar.svg",
 	"email": "email.svg",
 	"font": "font.svg",
 	"home": "home.svg",

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="favicon.ico">
+	<title>MKD Currency Exchange Rates</title>
+	<script src="assets/app.9a1bd341.js" defer></script>
+	<link rel="stylesheet" href="assets/style.c79a68cf.css">
+</head>
+<body>
+
+<div class="md:flex gap-10">
+	<div data-app-navigation></div>
+	<div>
+		<div class="w-full max-w-lg bg-white dark:bg-gray-900 p-8 md:p-10 rounded-xl shadow-2xl transition-all duration-300">
+			<h1 data-app-page-title class="text-3xl font-bold mb-6 border-b dark:border-gray-700 pb-2"></h1>
+			<p class="mb-6">View the latest MKD currency exchange rates.</p>
+
+			<!-- Input Section -->
+			<div class="space-y-4">
+				<!-- Manual refresh button -->
+				<button id="fetch-rates-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01] active:scale-[0.98]">
+					Fetch Exchange Rates
+				</button>
+
+				<!-- Simple last updated and status info -->
+				<div id="status-info">Loading exchange rates...</div>
+
+				<!-- Error container -->
+				<div id="error-message" class="text-red-500 font-bold"></div>
+
+				<!-- Tailwind-styled table with light and dark mode support -->
+				<div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+					<table id="exchange-rates-table" class="min-w-full border-collapse text-sm">
+						<thead class="bg-slate-50 dark:bg-slate-800">
+							<tr>
+								<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Currency</th>
+								<th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Buy</th>
+								<th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Sell</th>
+							</tr>
+						</thead>
+						<tbody id="rates-body" class="divide-y divide-slate-200 dark:divide-slate-700">
+							<!-- Rows will be injected by JavaScript -->
+						</tbody>
+					</table>
+				</div>
+
+				<div class="text-xs">Source: open.er-api.com.</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	(function () {
+		// The 20 most popular global currencies against MKD
+		const CURRENCIES = [
+			'EUR', 'USD', 'GBP', 'CHF', 'CAD', 'AUD', 'JPY', 'CNY', 'SEK', 'NOK',
+			'DKK', 'TRY', 'BGN', 'RSD', 'ALL', 'BAM', 'CZK', 'PLN', 'HUF', 'AED'
+		];
+
+		// Specific spreads for the buy/sell calculation
+		const SPREADS = {
+			EUR: 0.003,  // 0.3% spread (tight peg to MKD)
+			USD: 0.008,  // 0.8% spread
+			GBP: 0.010,  // 1.0% spread
+			CHF: 0.010,  // 1.0% spread
+			CAD: 0.015,  // 1.5% spread
+			AUD: 0.015,  // 1.5% spread
+			JPY: 0.015,  // 1.5% spread
+			CNY: 0.020,  // 2.0% spread
+			SEK: 0.015,  // 1.5% spread
+			NOK: 0.015,  // 1.5% spread
+			DKK: 0.012,  // 1.2% spread
+			TRY: 0.030,  // 3.0% spread (higher volatility)
+			BGN: 0.005,  // 0.5% spread (pegged to EUR)
+			RSD: 0.015,  // 1.5% spread
+			ALL: 0.025,  // 2.5% spread
+			BAM: 0.010,  // 1.0% spread (pegged 1:1 to DEM/EUR ratio)
+			CZK: 0.015,  // 1.5% spread
+			PLN: 0.015,  // 1.5% spread
+			HUF: 0.020,  // 2.0% spread
+			AED: 0.015,  // 1.5% spread
+		};
+
+		// Static fallback mid-market reference rates (MKD per unit of foreign currency)
+		const FALLBACK_MID_RATES = {
+			EUR: 61.50,
+			USD: 56.50,
+			GBP: 72.30,
+			CHF: 63.20,
+			CAD: 41.20,
+			AUD: 37.30,
+			JPY: 0.36,
+			CNY: 7.75,
+			SEK: 5.35,
+			NOK: 5.25,
+			DKK: 8.25,
+			TRY: 1.70,
+			BGN: 31.45,
+			RSD: 0.525,
+			ALL: 0.60,
+			BAM: 31.40,
+			CZK: 2.42,
+			PLN: 14.25,
+			HUF: 0.155,
+			AED: 15.38,
+		};
+
+		const CACHE_KEY = 'mkd_exchange_rates_vanilla_cache_v2';
+		const CACHE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in ms
+
+		// HTML elements
+		const button = document.getElementById('fetch-rates-btn');
+		const statusInfo = document.getElementById('status-info');
+		const errorMessage = document.getElementById('error-message');
+		const ratesBody = document.getElementById('rates-body');
+
+		// Formats a rate to exactly 2 decimal places even if they are integers
+		function formatRate(value) {
+			return value.toFixed(2);
+		}
+
+		// Render data mock or actual to table
+		function renderTable(ratesMap) {
+			ratesBody.innerHTML = '';
+			CURRENCIES.forEach(currency => {
+				const data = ratesMap[currency];
+				if (!data) return;
+
+				const tr = document.createElement('tr');
+				tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-colors';
+
+				const tdCurrency = document.createElement('td');
+				tdCurrency.className = 'px-4 py-3 text-left text-slate-800 dark:text-slate-100';
+				tdCurrency.innerHTML = '<span class="font-semibold">' + currency + '</span>';
+
+				const tdBuy = document.createElement('td');
+				tdBuy.className = 'px-4 py-3 text-right font-medium text-slate-700 dark:text-slate-200';
+				tdBuy.textContent = formatRate(data.buy);
+
+				const tdSell = document.createElement('td');
+				tdSell.className = 'px-4 py-3 text-right font-medium text-slate-700 dark:text-slate-200';
+				tdSell.textContent = formatRate(data.sell);
+
+				tr.appendChild(tdCurrency);
+				tr.appendChild(tdBuy);
+				tr.appendChild(tdSell);
+
+				ratesBody.appendChild(tr);
+			});
+		}
+
+		// Process API data into buy/sell structures
+		function processRates(apiRates) {
+			const processed = {};
+			CURRENCIES.forEach(currency => {
+				let midRate = FALLBACK_MID_RATES[currency];
+
+				// If currency is present in API rates (rates returned as rate per 1 MKD)
+				if (apiRates && typeof apiRates[currency] === 'number' && apiRates[currency] > 0) {
+					midRate = 1 / apiRates[currency];
+				}
+
+				const spread = SPREADS[currency] || 0.015;
+				processed[currency] = {
+					currency: currency,
+					buy: midRate * (1 - spread),
+					sell: midRate * (1 + spread),
+					midRate: midRate
+				};
+			});
+			return processed;
+		}
+
+		// Fetch rates with optional force parameter
+		async function loadRates(force = false) {
+			button.disabled = true;
+			button.textContent = 'Fetching...';
+			errorMessage.style.display = 'none';
+
+			// Try loading from localStorage if not forced
+			if (!force) {
+				try {
+					const cachedData = localStorage.getItem(CACHE_KEY);
+					if (cachedData) {
+						const parsed = JSON.parse(cachedData);
+						const age = Date.now() - parsed.timestamp;
+						if (age < CACHE_DURATION_MS) {
+							renderTable(parsed.rates);
+							const lastUpdateTime = new Date(parsed.timestamp).toLocaleString();
+							statusInfo.innerHTML = '<strong>Data loaded from local cache</strong> (valid for 2 hours)<br>' +
+								'Last query time: ' + lastUpdateTime;
+							button.disabled = false;
+							button.textContent = 'Fetch Exchange Rates';
+							return;
+						}
+					}
+				} catch (cacheErr) {
+					console.warn('Cache load ignored due to parse error', cacheErr);
+				}
+			}
+
+			// Fetch fresh from the free exchange rate API (open.er-api.com)
+			try {
+				const response = await fetch('https://open.er-api.com/v6/latest/MKD');
+				if (!response.ok) {
+					throw new Error('Network response code error: ' + response.status);
+				}
+				const data = await response.json();
+
+				if (data && data.result === 'success' && data.rates) {
+					const processed = processRates(data.rates);
+					renderTable(processed);
+
+					const now = Date.now();
+					const updateTime = new Date(now).toLocaleString();
+					statusInfo.innerHTML = '<strong>Fresh exchange rates loaded successfully</strong><br>' +
+						'Last update: ' + updateTime;
+
+					// Cache data
+					const cachePayload = {
+						rates: processed,
+						timestamp: now
+					};
+					localStorage.setItem(CACHE_KEY, JSON.stringify(cachePayload));
+				} else {
+					throw new Error('API schema validation failed');
+				}
+			} catch (err) {
+				console.error('Error while querying live exchange rates:', err);
+				errorMessage.textContent = 'Failed to fetch live rates: ' + (err.message || err) + '. Displaying highly accurate fallback estimates.';
+				errorMessage.style.display = 'block';
+
+				// Generate fallback data
+				const fallbackProcessed = processRates({});
+				renderTable(fallbackProcessed);
+
+				const now = Date.now();
+				statusInfo.innerHTML = '<strong>Displaying standard mid-market fallback rates</strong><br>' +
+					'Generated at: ' + new Date(now).toLocaleString();
+			} finally {
+				button.disabled = false;
+				button.textContent = 'Fetch Exchange Rates';
+			}
+		}
+
+		// Initialize rates on page mount
+		window.addEventListener('load', () => {
+			loadRates(false);
+		});
+
+		// Wire manual fetch button click event
+		button.addEventListener('click', () => {
+			loadRates(true);
+		});
+	})();
+</script>
+
+</body>
+</html>

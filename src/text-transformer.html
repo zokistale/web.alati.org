@@ -35,84 +35,72 @@
 				<div>
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">Title Case</h2>
-						<button onclick="copyToClipboard('titleOutput', 'titleCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 cursor-pointer transition duration-150" title="Copy to clipboard">
+						<button type="button" class="copy-btn flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 cursor-pointer transition duration-150" data-copy-target="titleOutput" data-copy-label="titleCopyText" title="Copy to clipboard">
 							<x-icon-copy class="h-4 w-4" />
 							<span id="titleCopyText">Copy</span>
 						</button>
 					</div>
-					<div id="titleOutput" class="border border-gray-200 rounded-lg p-3 text-sm font-medium">
-						Waiting for input...
-					</div>
+					<div id="titleOutput" class="border border-gray-200 rounded-lg p-3 text-sm font-medium">This Is A Sample Text.</div>
 				</div>
 
 				<!-- Lowercase Card -->
 				<div>
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">Lowercase</h2>
-						<button onclick="copyToClipboard('lowercaseOutput', 'lowercaseCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 cursor-pointer transition duration-150" title="Copy to clipboard">
+						<button type="button" class="copy-btn flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 cursor-pointer transition duration-150" data-copy-target="lowercaseOutput" data-copy-label="lowercaseCopyText" title="Copy to clipboard">
 							<x-icon-copy class="h-4 w-4" />
 							<span id="lowercaseCopyText">Copy</span>
 						</button>
 					</div>
-					<div id="lowercaseOutput" class="border border-gray-200 rounded-lg p-3 text-sm font-medium">
-						waiting for input...
-					</div>
+					<div id="lowercaseOutput" class="border border-gray-200 rounded-lg p-3 text-sm font-medium">this is a sample text.</div>
 				</div>
 
 				<!-- Uppercase Card -->
 				<div>
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">Uppercase</h2>
-						<button onclick="copyToClipboard('uppercaseOutput', 'uppercaseCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
+						<button type="button" class="copy-btn flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150" data-copy-target="uppercaseOutput" data-copy-label="uppercaseCopyText">
 							<x-icon-copy class="h-4 w-4" />
 							<span id="uppercaseCopyText">Copy</span>
 						</button>
 					</div>
-					<div id="uppercaseOutput" class="border border-gray-200 rounded-lg p-3 text-sm font-medium">
-						WAITING FOR INPUT...
-					</div>
+					<div id="uppercaseOutput" class="border border-gray-200 rounded-lg p-3 text-sm font-medium">THIS IS A SAMPLE TEXT.</div>
 				</div>
 
 				<!-- Camel Case Card -->
 				<div>
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">Camel Case</h2>
-						<button onclick="copyToClipboard('camelOutput', 'camelCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
+						<button type="button" class="copy-btn flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150" data-copy-target="camelOutput" data-copy-label="camelCopyText">
 							<x-icon-copy class="h-4 w-4" />
 							<span id="camelCopyText">Copy</span>
 						</button>
 					</div>
-					<div id="camelOutput" class="border border-gray-200 rounded-lg p-3 text-sm text-indigo-700 dark:text-indigo-400 font-mono break-all">
-						waitingForInput
-					</div>
+					<div id="camelOutput" class="border border-gray-200 rounded-lg p-3 text-sm text-indigo-700 dark:text-indigo-400 font-mono break-all">thisIsASampleText</div>
 				</div>
 
 				<!-- Snake Case Card -->
 				<div>
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">Snake Case</h2>
-						<button onclick="copyToClipboard('snakeOutput', 'snakeCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
+						<button type="button" class="copy-btn flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150" data-copy-target="snakeOutput" data-copy-label="snakeCopyText">
 							<x-icon-copy class="h-4 w-4" />
 							<span id="snakeCopyText">Copy</span>
 						</button>
 					</div>
-					<div id="snakeOutput" class="border border-gray-200 rounded-lg p-3 text-sm text-indigo-700 dark:text-indigo-400 font-mono break-all">
-						waiting_for_input
-					</div>
+					<div id="snakeOutput" class="border border-gray-200 rounded-lg p-3 text-sm text-indigo-700 dark:text-indigo-400 font-mono break-all">this_is_a_sample_text</div>
 				</div>
 
 				<!-- Slug Card -->
 				<div>
 					<div class="flex justify-between items-center mb-2">
 						<h2 class="text-sm font-bold uppercase tracking-wider">URL Slug</h2>
-						<button onclick="copyToClipboard('slugOutput', 'slugCopyText')" class="flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150">
+						<button type="button" class="copy-btn flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 transition duration-150" data-copy-target="slugOutput" data-copy-label="slugCopyText">
 							<x-icon-copy class="h-4 w-4" />
 							<span id="slugCopyText">Copy</span>
 						</button>
 					</div>
-					<div id="slugOutput" class="border border-gray-200 rounded-lg p-3 text-sm text-indigo-700 dark:text-indigo-400 font-mono break-all">
-						waiting-for-input
-					</div>
+					<div id="slugOutput" class="border border-gray-200 rounded-lg p-3 text-sm text-indigo-700 dark:text-indigo-400 font-mono break-all">this-is-a-sample-text</div>
 				</div>
 			</div>
 
@@ -130,7 +118,9 @@
 	</div>
 </div>
 
-<script>
+<script type="module">
+	const { copyTextToClipboard, flashCopyFeedback } = window;
+
 	const messageBox = document.getElementById('messageBox');
 	const messageTitle = document.getElementById('messageTitle');
 	const messageContent = document.getElementById('messageContent');
@@ -210,28 +200,26 @@
 		slugOutput.textContent = toSlug(val);
 	}
 
-	function copyToClipboard(elementId, btnTextId) {
-		const text = document.getElementById(elementId).textContent;
-		const btnSpan = document.getElementById(btnTextId);
-
-		if (text.toLowerCase().includes('waiting for input')) return;
-
-		const temp = document.createElement('textarea');
-		temp.value = text;
-		document.body.appendChild(temp);
-		temp.select();
+	async function copyToClipboard(text, button) {
+		if (!text.trim() || text.toLowerCase().includes('waiting for input')) return;
 
 		try {
-			document.execCommand('copy');
-			const originalText = btnSpan.textContent;
-			btnSpan.textContent = 'Copied!';
-			setTimeout(() => { btnSpan.textContent = originalText; }, 2000);
+			await copyTextToClipboard(text);
+			flashCopyFeedback(button);
 		} catch (err) {
+			console.error('Copy failed.', err);
 			showMessageBox('Copy Failed', 'Unable to copy text automatically.');
-		} finally {
-			document.body.removeChild(temp);
 		}
 	}
+
+	document.querySelectorAll('.copy-btn').forEach((button) => {
+		button.addEventListener('click', () => {
+			const text = document.getElementById(button.dataset.copyTarget)?.textContent ?? '';
+			copyToClipboard(text, button);
+		});
+	});
+
+	window.copyToClipboard = copyToClipboard;
 
 	transformBtn.addEventListener('click', transformText);
 

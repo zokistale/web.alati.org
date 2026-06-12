@@ -36,7 +36,7 @@
 								<span class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Transliterate from EN Latin to MK Cyrillic</span>
 								<span class="mt-1 inline-block px-2 text-sm rounded-sm text-gray-500 dark:text-gray-300 bg-gray-200 dark:bg-gray-900 font-mono">o p sh gj l ch kj&nbsp;&nbsp;⮞&nbsp;&nbsp;о п ш ѓ л ч ќ</span>
 							</span>
-							<p class="mt-3 text-sm text-gray-600 dark:text-gray-300 hidden" data-method-description="en-to-mk">Transliterates Latin text into Macedonian Cyrillic, treating multi-letter groups such as “sh” and “kj” as one Macedonian character. The letters “q”, “w”, “x”, and “y” are kept as-is.</p>
+							<p class="mt-3 text-sm text-gray-600 dark:text-gray-300 hidden" data-method-description="en-to-mk">Transliterates Latin text into Macedonian Cyrillic, treating multi-letter groups such as “sh” and “kj” as one Macedonian character. The letters “q”, “w”, “x”, and “y” are kept as they are.</p>
 						</label>
 
 						<label class="block rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50/70 dark:hover:border-indigo-500 dark:hover:bg-gray-800/90 cursor-pointer">
@@ -54,7 +54,7 @@
 								<span class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Convert from MK with Latin font to MK Cyrillic</span>
 								<span class="mt-1 inline-block px-2 text-sm rounded-sm text-gray-500 dark:text-gray-300 bg-gray-200 dark:bg-gray-900 font-mono">o p { | l ~ }&nbsp;&nbsp;⮞&nbsp;&nbsp;о п ш ѓ л ч ќ</span>
 							</span>
-							<p class="mt-3 text-sm text-gray-600 dark:text-gray-300 hidden" data-method-description="font-to-mk">This converts old-style font-encoded text back into modern Macedonian Cyrillic, including examples such as “|” → “ѓ” and “w” → “њ”.</p>
+							<p class="mt-3 text-sm text-gray-600 dark:text-gray-300 hidden" data-method-description="font-to-mk">This method converts old-style font-encoded text back into modern Macedonian Cyrillic. Some characters, such as “|” → “ѓ”, “w” → “њ”, and “[” → “Ш” are also converted in the process.</p>
 						</label>
 					</div>
 				</section>
@@ -81,7 +81,7 @@
 					<div class="space-y-3">
 						<div class="flex items-center justify-between gap-3">
 							<label for="inputText" class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Input</label>
-							<button id="clearInputBtn" type="button" class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer" title="Clear input">
+							<button id="clearInputBtn" type="button" class="inline-flex items-center gap-1 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer" title="Clear input">
 								<x-icon-clear class="h-4 w-4" />
 								<span>Clear</span>
 							</button>
@@ -93,7 +93,7 @@
 					<div class="space-y-3">
 						<div class="flex items-center justify-between gap-3">
 							<label for="outputText" class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Output</label>
-							<button id="copyOutputBtn" type="button" class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer" title="Copy output">
+							<button id="copyOutputBtn" type="button" class="inline-flex items-center gap-1 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer" title="Copy output">
 								<x-icon-copy class="h-4 w-4" />
 								<span>Copy</span>
 							</button>
@@ -112,7 +112,9 @@
 	</div>
 </div>
 
-<script>
+<script type="module">
+	const { copyTextToClipboard, flashCopyFeedback } = window;
+
 	const methodCards = Array.from(document.querySelectorAll('input[name="conversionMethod"]'));
 	const methodDescriptions = Array.from(document.querySelectorAll('[data-method-description]'));
 	const inputText = document.getElementById('inputText');
@@ -254,13 +256,16 @@
 		}
 
 		try {
-			await navigator.clipboard.writeText(outputText.value);
-			const originalText = copyOutputBtn.querySelector('span').textContent;
-			copyOutputBtn.querySelector('span').textContent = 'Copied!';
+			await copyTextToClipboard(outputText.value);
+			flashCopyFeedback(copyOutputBtn);
+			statusMessage.textContent = 'Copied to clipboard.';
 			setTimeout(() => {
-				copyOutputBtn.querySelector('span').textContent = originalText;
+				if (statusMessage.textContent === 'Copied to clipboard.') {
+					statusMessage.textContent = '';
+				}
 			}, 1500);
 		} catch (error) {
+			console.error('Copy failed.', error);
 			statusMessage.textContent = 'Copy failed. Please select the text manually instead.';
 		}
 	}

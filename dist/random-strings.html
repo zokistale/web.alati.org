@@ -5,8 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" href="favicon.ico">
 	<title>String Generator</title>
-	<script src="assets/app.60c09e72.js" defer></script>
-	<link rel="stylesheet" href="assets/style.2c4a07e5.css">
+	<script src="assets/app.9a1bd341.js" defer></script>
+	<link rel="stylesheet" href="assets/style.c79a68cf.css">
 </head>
 <body>
 
@@ -79,7 +79,9 @@
 	</div>
 </div>
 
-<script>
+<script type="module">
+	const { copyTextToClipboard, flashCopyFeedback } = window;
+
 	const CHAR_SETS = {
 		lowercase: 'abcdefghijklmnopqrstuvwxyz',
 		uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -176,10 +178,7 @@
 
 			div.innerHTML = `
 				<code class="font-mono text-sm sm:text-base break-all select-all">${str}</code>
-				<button class="copy-single-btn shrink-0 p-2 text-gray-400 hover:text-indigo-700 hover:bg-gray-200 dark:hover:text-indigo-300 dark:hover:bg-gray-600 rounded-lg transition-all" title="Copy string">
-					<x-icon-copy class="w-5 h-5 icon-copy" />
-					<x-icon-check class="w-5 h-5 text-emerald-600 hidden icon-check" />
-				</button>
+				<button class="copy-single-btn shrink-0 p-2 text-gray-400 hover:text-indigo-700 hover:bg-gray-200 dark:hover:text-indigo-300 dark:hover:bg-gray-600 rounded-lg cursor-pointer transition-all" title="Copy string"><x-icon-copy class="w-4 h-4 icon-copy" /></button>
 			`;
 
 			const btn = div.querySelector('.copy-single-btn');
@@ -190,22 +189,15 @@
 
 	async function copyToClipboard(text, button) {
 		try {
-			await navigator.clipboard.writeText(text);
-			const copyIcon = button.querySelector('.icon-copy');
-			const checkIcon = button.querySelector('.icon-check');
-
-			copyIcon.classList.add('hidden');
-			checkIcon.classList.remove('hidden');
-			setTimeout(() => {
-				copyIcon.classList.remove('hidden');
-				checkIcon.classList.add('hidden');
-			}, 2000);
+			await copyTextToClipboard(text);
+			flashCopyFeedback(button);
 		} catch (err) {
 			console.error('Failed to copy!', err);
+			showMessageBox('Copy Failed', 'Unable to copy text. Please select and copy manually.');
 		}
 	}
 
-	function copyAllStrings() {
+	async function copyAllStrings() {
 		const allText = generatedStrings.join('\n');
 
 		if (!allText.trim()) {
@@ -213,22 +205,12 @@
 			return;
 		}
 
-		const tempTextarea = document.createElement('textarea');
-		tempTextarea.value = allText;
-		document.body.appendChild(tempTextarea);
-		tempTextarea.select();
-
 		try {
-			document.execCommand('copy');
-			copyAllText.textContent = 'Copied!';
-			setTimeout(() => {
-				copyAllText.textContent = 'Copy All';
-			}, 2000);
+			await copyTextToClipboard(allText);
+			flashCopyFeedback(copyAllBtn);
 		} catch (err) {
 			showMessageBox('Copy Failed', 'Unable to copy text. Please select and copy manually.');
 			console.error('Failed to copy all!', err);
-		} finally {
-			document.body.removeChild(tempTextarea);
 		}
 	}
 

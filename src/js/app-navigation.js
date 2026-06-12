@@ -7,6 +7,7 @@ const APP_NAV_LINKS = [
 	{ href: 'macedonian-fonts.html', label: 'Macedonian Fonts' },
 	{ href: 'en-mk-converter.html', label: 'EN-MK Converter' },
 	{ href: 'html-keyboard.html', label: 'HTML Keyboard' },
+	{ href: 'mkd-exchange-rates.html', label: 'MKD Exchange Rates' },
 ];
 
 const APP_NAV_ICONS = {
@@ -17,7 +18,8 @@ const APP_NAV_ICONS = {
 	transform: '<x-icon-transform class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-transform>',
 	font: '<x-icon-font class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-font>',
 	convert: '<x-icon-convert class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-convert>',
-	html: '<x-icon-html class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-html>'
+	html: '<x-icon-html class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-html>',
+	mkd: '<x-icon-dollar class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-dollar>'
 };
 
 const currentPage = window.location.pathname.split('/').pop();
@@ -57,6 +59,10 @@ function getNavigationIcon(href) {
 
 	if (href.includes('html-keyboard')) {
 		return APP_NAV_ICONS.html;
+	}
+
+	if (href.includes('mkd-exchange-rates')) {
+		return APP_NAV_ICONS.mkd;
 	}
 
 	return null;

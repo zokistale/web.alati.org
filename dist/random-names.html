@@ -5,8 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" href="favicon.ico">
 	<title>Name Generator</title>
-	<script src="assets/app.60c09e72.js" defer></script>
-	<link rel="stylesheet" href="assets/style.2c4a07e5.css">
+	<script src="assets/app.9a1bd341.js" defer></script>
+	<link rel="stylesheet" href="assets/style.c79a68cf.css">
 </head>
 <body>
 
@@ -43,7 +43,7 @@
 				<div class="flex justify-between items-center mb-2">
 					<h2 class="text-xl font-semibold">Results</h2>
 					<button id="copyBtn" class="flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150" disabled>
-						<x-icon-copy class="h-5 w-5" />
+						<x-icon-copy class="h-4 w-4" />
 						<span id="copyText">Copy All</span>
 					</button>
 				</div>
@@ -67,7 +67,9 @@
 	</div>
 </div>
 
-<script>
+<script type="module">
+	const { copyTextToClipboard, flashCopyFeedback } = window;
+
 	// --- Message Box Logic (Custom Alert Replacement) ---
 	const messageBox = document.getElementById('messageBox');
 	const messageTitle = document.getElementById('messageTitle');
@@ -333,29 +335,19 @@
 	/**
 	 * Copies the content of the results div to the clipboard.
 	 */
-	function copyToClipboard() {
+	async function copyToClipboard() {
 		const textToCopy = resultsDiv.textContent;
 		if (textToCopy === 'The generated names will appear here.' || textToCopy.trim() === '') {
 			showMessageBox('Nothing to Copy', 'Please generate some names first.');
 			return;
 		}
 
-		// Use document.execCommand('copy') for better compatibility in iframe environments
-		const tempTextarea = document.createElement('textarea');
-		tempTextarea.value = textToCopy;
-		document.body.appendChild(tempTextarea);
-		tempTextarea.select();
-
 		try {
-			document.execCommand('copy');
-			copyTextSpan.textContent = 'Copied!';
-			// Reset text after a delay
-			setTimeout(() => { copyTextSpan.textContent = 'Copy All'; }, 2000);
+			await copyTextToClipboard(textToCopy);
+			flashCopyFeedback(copyBtn);
 		} catch (err) {
 			showMessageBox('Copy Failed', 'Unable to copy text. Please select and copy manually.');
 			console.error('Copy failed:', err);
-		} finally {
-			document.body.removeChild(tempTextarea);
 		}
 	}
 

@@ -75,8 +75,7 @@
 				<aside class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
 					<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">How to use</h2>
 					<ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-gray-600 dark:text-gray-300">
-						<li>Pick a Unicode set from the dropdown.</li>
-						<li>Use PREV and NEXT to move through the available groups.</li>
+						<li>Pick a Unicode set from the dropdown, or use PREV and NEXT to move through the available groups.</li>
 						<li>Click any cell to show the character with its Unicode and hexadecimal HTML entity below.</li>
 						<li>Copy or clear the code from the action buttons next to the output field.</li>
 					</ul>
@@ -87,6 +86,8 @@
 </div>
 
 <script type="module">
+	const { copyTextToClipboard, flashCopyFeedback } = window;
+
 	const unicodeSets = [
 		{ label: 'Basic Latin', start: 0x20, end: 0x7E },
 		{ label: 'Latin-1 Supplement', start: 0xA0, end: 0xFF },
@@ -374,29 +375,8 @@
 		}
 	});
 
-function copyTextToClipboard(text) {
-		if (navigator.clipboard?.writeText) {
-			return navigator.clipboard.writeText(text);
-		}
-
-		const textarea = document.createElement('textarea');
-		textarea.value = text;
-		textarea.setAttribute('readonly', '');
-		textarea.style.position = 'fixed';
-		textarea.style.top = '-9999px';
-		document.body.appendChild(textarea);
-		textarea.select();
-		document.execCommand('copy');
-		document.body.removeChild(textarea);
-		return Promise.resolve();
-	}
-
 	function flashCopyState(button) {
-		const originalContent = button.innerHTML;
-		button.innerHTML = '<x-icon-check class="h-4 w-4" aria-hidden="true"></x-icon-check><span>Copied!</span>';
-		setTimeout(() => {
-			button.innerHTML = originalContent;
-		}, 1800);
+		flashCopyFeedback(button);
 	}
 
 	copyHtmlBtn.addEventListener('click', async () => {

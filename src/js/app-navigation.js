@@ -22,10 +22,30 @@ const APP_NAV_ICONS = {
 	mkd: '<x-icon-dollar class="size-[1.2em] shrink-0" aria-hidden="true"></x-icon-dollar>'
 };
 
-const currentPage = window.location.pathname.split('/').pop();
+export function normalizePageKey(value) {
+	const cleaned = value?.split('?')[0]?.split('#')[0] ?? '';
 
-function getCurrentPageLink() {
-	return APP_NAV_LINKS.find(({ href }) => href === currentPage) || null;
+	if (!cleaned || cleaned === '/') {
+		return '/';
+	}
+
+	const normalized = cleaned
+		.replace(/\/index\.html$/i, '/')
+		.replace(/\.html$/i, '')
+		.replace(/\/+$/g, '')
+		.replace(/^\/+/, '');
+
+	return normalized || '/';
+}
+
+function getCurrentPage(pathname = typeof window !== 'undefined' ? window.location.pathname : '/') {
+	return normalizePageKey(pathname);
+}
+
+export function getCurrentPageLink(pathname) {
+	const currentPage = getCurrentPage(pathname);
+
+	return APP_NAV_LINKS.find(({ href }) => normalizePageKey(href) === currentPage) || null;
 }
 
 function getNavigationIcon(href) {
@@ -86,10 +106,12 @@ function buildPageTitle() {
 }
 
 function buildAppNavigation() {
+	const currentPage = getCurrentPage();
+
 	return `
 		<nav class="grid gap-2 mb-5" aria-label="Tool navigation">
 			${APP_NAV_LINKS.map(({ href, label }) => {
-				const isActive = href === currentPage;
+				const isActive = normalizePageKey(href) === currentPage;
 				const iconMarkup = getNavigationIcon(href);
 				const stateClasses = isActive
 					? 'border-indigo-300 bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
@@ -116,8 +138,10 @@ const mountAppNavigation = () => {
 	});
 };
 
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', mountAppNavigation);
-} else {
-	mountAppNavigation();
+if (typeof document !== 'undefined') {
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', mountAppNavigation);
+	} else {
+		mountAppNavigation();
+	}
 }

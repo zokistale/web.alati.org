@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process';
 import { watch } from 'node:fs';
 import { access, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -113,13 +113,25 @@ const mimeTypes = {
 	'.woff2': 'font/woff2'
 };
 
+function resolveRequestPath(pathname) {
+	const normalized = decodeURIComponent(pathname || '').replace(/\\/g, '/');
+
+	if (!normalized || normalized === '/') {
+		return '/index.html';
+	}
+
+	if (path.extname(normalized)) {
+		return normalized;
+	}
+
+	return `${normalized.replace(/\/+$/, '')}.html`;
+}
+
+export { resolveRequestPath };
+
 const serveStatic = async (req, res) => {
 	const requestUrl = new URL(req.url, `http://${req.headers.host}`);
-	let pathname = decodeURIComponent(requestUrl.pathname);
-
-	if (pathname === '/') {
-		pathname = '/index.html';
-	}
+	const pathname = resolveRequestPath(requestUrl.pathname);
 
 	if (pathname === '/events') {
 		res.writeHead(200, {
@@ -232,7 +244,19 @@ const main = async () => {
 	await startServer();
 };
 
-main().catch((error) => {
-	console.error('[dev] Unexpected error:', error);
-	process.exit(1);
-});
+const isDirectExecution = () => {
+	const invokedPath = process.argv[1];
+
+	if (!invokedPath) {
+		return false;
+	}
+
+	return pathToFileURL(path.resolve(invokedPath)).href === import.meta.url;
+};
+
+if (isDirectExecution()) {
+	main().catch((error) => {
+		console.error('[dev] Unexpected error:', error);
+		process.exit(1);
+	});
+}

@@ -1,13 +1,13 @@
 const APP_NAV_LINKS = [
 	{ href: '/', label: 'Home' },
-	{ href: 'random-emails.html', label: 'Email Generator' },
-	{ href: 'random-names.html', label: 'Name Generator' },
-	{ href: 'random-strings.html', label: 'String Generator' },
-	{ href: 'text-transformer.html', label: 'Text Transformer' },
-	{ href: 'macedonian-fonts.html', label: 'Macedonian Fonts' },
-	{ href: 'en-mk-converter.html', label: 'EN-MK Converter' },
-	{ href: 'html-keyboard.html', label: 'HTML Keyboard' },
-	{ href: 'mkd-exchange-rates.html', label: 'MKD Exchange Rates' },
+	{ href: 'random-emails', label: 'Email Generator' },
+	{ href: 'random-names', label: 'Name Generator' },
+	{ href: 'random-strings', label: 'String Generator' },
+	{ href: 'text-transformer', label: 'Text Transformer' },
+	{ href: 'macedonian-fonts', label: 'Macedonian Fonts' },
+	{ href: 'en-mk-converter', label: 'EN-MK Converter' },
+	{ href: 'html-keyboard', label: 'HTML Keyboard' },
+	{ href: 'mkd-exchange-rates', label: 'MKD Exchange Rates' },
 ];
 
 const APP_NAV_ICONS = {
